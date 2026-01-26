@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class Menu
+internal class Menu
 {
 	public Menu(HotelService _hotelService)
 	{

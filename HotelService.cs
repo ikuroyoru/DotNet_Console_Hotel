@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection.Metadata.Ecma335;
 
-public class HotelService
+internal class HotelService
 {
 	public HotelService(HotelRepositorio _hotelRepositorio)
 	{
@@ -17,18 +17,8 @@ public class HotelService
 		if (qtdQuartos <= 0) return (false, ("Um hotel deve possuir quartos"));
 
 		if (nome.Length <= 0) return (false, ("Um hotel deve possuir um nome"));
-
-
-
-
-		List<int> listaDeQuartos = new List<int>();
-
-		for (int i = 1; i <= qtdQuartos; i++)
-		{
-			listaDeQuartos.Add(i);
-		}
-
-		Hotel hotel = new Hotel(nome, listaDeQuartos);
+		
+		Hotel hotel = new Hotel(nome, qtdQuartos);
 
 		hotelRepositorio.Adicionar(hotel);
 

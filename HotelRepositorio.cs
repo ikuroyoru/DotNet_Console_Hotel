@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class HotelRepositorio
+internal class HotelRepositorio
 {
 	public List<Hotel> Hoteis = new();
 
