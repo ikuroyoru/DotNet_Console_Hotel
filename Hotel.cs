@@ -19,18 +19,9 @@
         for (int i = qtdStandard + 1; i <= qtdQuartos; i++)
             Quartos.Add(new Quarto(i, "Premium"));
 
-        ExibirQuartos();
     }
 
     public string Nome { get; private set; }
     public List<Quarto> Quartos { get; private set; }
     // List<Avaliacao> Avaliacoes { get; set; } AVALIACOES PARA HOTEIS
-
-    void ExibirQuartos()
-    {
-        foreach (var quarto in Quartos)
-        {
-            Console.WriteLine($"Quarto {quarto.Numero} | Categoria: {quarto.Categoria}");
-        }
-    }
 }

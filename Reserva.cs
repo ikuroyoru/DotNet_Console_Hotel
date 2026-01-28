@@ -6,6 +6,7 @@
 
     }
 
-
+    Cliente Cliente { get; set; }
+    string Status; // ativo / cancelado / reembolsado
 }
 */
