@@ -8,4 +8,10 @@ internal class HotelRepositorio
 	{
 	    Hoteis.Add(hotel);
 	}
+
+    public IReadOnlyList<Hotel> ObterTodos()
+    {
+        return Hoteis.AsReadOnly();
+    }
+
 }

@@ -3,12 +3,12 @@ using System.Reflection.Metadata.Ecma335;
 
 internal class HotelService
 {
-	public HotelService(HotelRepositorio _hotelRepositorio)
+	public HotelService(HotelRepositorio hotelRepositorio)
 	{
-		hotelRepositorio = _hotelRepositorio;
+		_hotelRepositorio = hotelRepositorio;
 	}
 
-	HotelRepositorio hotelRepositorio;
+	HotelRepositorio _hotelRepositorio;
 
 	public (bool sucesso, string mensagem) CriarHotel(string nome, string quantidadeDeQuartos)
 	{
@@ -20,15 +20,16 @@ internal class HotelService
 		
 		Hotel hotel = new Hotel(nome, qtdQuartos);
 
-		hotelRepositorio.Adicionar(hotel);
+		_hotelRepositorio.Adicionar(hotel);
 
 		return (true, ("Hotel " + hotel.Nome + " adicionado com sucesso"));
 	}
 
-	public List<Hotel> ObterHoteis()
-	{
-		return hotelRepositorio.Hoteis;
-	}
+    public IReadOnlyList<Hotel> ObterHoteis()
+    {
+        return _hotelRepositorio.ObterTodos();
+    }
 
-	
+
+
 }

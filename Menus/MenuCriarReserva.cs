@@ -47,7 +47,7 @@ internal class MenuCriarReserva : Menu
 
     Hotel? SelecionarHotel()
     {
-        List<Hotel> hoteis = _hotelService.ObterHoteis();
+        IReadOnlyList<Hotel> hoteis = _hotelService.ObterHoteis();
 
         while (true)
         {

@@ -11,7 +11,7 @@ internal class MenuExibirHoteis : Menu
     public override void Executar()
 	{
         Console.WriteLine("LISTA DE HOTEIS");
-        List<Hotel> Hoteis = _hotelService.ObterHoteis();
+        IReadOnlyList<Hotel> Hoteis = _hotelService.ObterHoteis();
 
         foreach (Hotel hotel in Hoteis)
         {
