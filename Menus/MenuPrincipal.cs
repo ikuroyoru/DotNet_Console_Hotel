@@ -1,18 +1,16 @@
-﻿using System.Reflection.Metadata.Ecma335;
+﻿using DotNet_Console_Hotel.Services;
+using System.Reflection.Metadata.Ecma335;
 
 namespace DotNet_Console_Hotel.Menus;
 
 internal class MenuPrincipal : Menu
 {
-    public MenuPrincipal(HotelService hotelService)
-        :base(hotelService) 
+    public MenuPrincipal(Dictionary<int, Menu> opcoes)
     {
-        opcoes.Add(1, new MenuCriarReserva(hotelService));
-        opcoes.Add(2, new MenuExibirHoteis(hotelService));
-        opcoes.Add(3, new MenuAdicionarHotel(hotelService));
+        Opcoes = opcoes;
     }
 
-    private Dictionary<int, Menu> opcoes = new();
+    private readonly Dictionary<int, Menu> Opcoes = new();
 
 
     public override void Executar()
@@ -24,9 +22,9 @@ internal class MenuPrincipal : Menu
 
             int escolha = ParseEscolha();
 
-            if (opcoes.ContainsKey(escolha))
+            if (Opcoes.ContainsKey(escolha))
             {
-                opcoes[escolha].Executar();
+                Opcoes[escolha].Executar();
             }
             else
             {

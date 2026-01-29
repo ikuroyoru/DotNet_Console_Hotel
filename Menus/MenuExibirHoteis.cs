@@ -3,11 +3,12 @@
 internal class MenuExibirHoteis : Menu
 {
 	public MenuExibirHoteis(HotelService hotelService) 
-        :base(hotelService)
-	{
-	}
+    { 
+      _hotelService = hotelService;
+    }
 
-	public override void Executar()
+    private readonly HotelService _hotelService;
+    public override void Executar()
 	{
         Console.WriteLine("LISTA DE HOTEIS");
         List<Hotel> Hoteis = _hotelService.ObterHoteis();

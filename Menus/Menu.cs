@@ -2,12 +2,7 @@
 
 internal class Menu
 {
-	public Menu(HotelService hotelService)
-	{
-		_hotelService = hotelService;
-	}
-
-	protected readonly HotelService _hotelService;
+	public Menu() { }
 
 	public virtual void Executar()
 	{

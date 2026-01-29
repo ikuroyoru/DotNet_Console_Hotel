@@ -8,10 +8,11 @@ internal class Quarto
 
     public int Numero { get; }
     public string Categoria { get; }
-    // List<Reserva> Reserva { get; set; } // CRIAR OBJETO DE RESERVA
+    public List<Reserva> Reservas { get; set; } = new(); // CRIAR OBJETO DE RESERVA
 
-    void CriarReserva()
+    public void CriarReserva(/* string nomeCliente*/ DateTime dataEntrada, DateTime dataSaida)
     {
-        // CRIAR REGRA DE NEGOCIOS PARA RESERVAS - VALIDAR DATAS ANTES DE CRIAR RESERVAS
+        Reserva reserva = new(dataEntrada, dataSaida);
+        Reservas.Add(reserva);
     }
 }

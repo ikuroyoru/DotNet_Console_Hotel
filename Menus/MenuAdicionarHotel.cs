@@ -3,9 +3,11 @@
 internal class MenuAdicionarHotel : Menu
 {
     public MenuAdicionarHotel(HotelService hotelService)
-        :base(hotelService)
 	{
-	}
+        _hotelService = hotelService;
+    }
+
+    private readonly HotelService _hotelService;    
 
     public override void Executar()
     {
