@@ -12,6 +12,14 @@ namespace DotNet_Console_Hotel.Menus;
 /// O menu executa em loop infinito, aguardando interação do usuário.
 /// A navegação ocorre com base em um dicionário que associa
 /// números inteiros a instâncias de <see cref="Menu"/>.
+/// 
+/// Fluxo:
+/// - Limpa o console a cada iteração.
+/// - Exibe as opções disponíveis.
+/// - Lê a escolha do usuário.
+/// - Executa o menu correspondente caso exista.
+/// - Exibe mensagem de erro caso a opção seja inválida.
+/// - Aguarda uma tecla antes de reiniciar o loop.
 /// </remarks>
 internal class MenuPrincipal : Menu
 {
@@ -34,18 +42,17 @@ internal class MenuPrincipal : Menu
     private readonly Dictionary<int, Menu> Opcoes = new();
 
     /// <summary>
-    /// Executa o menu principal.
+    /// Executa o loop principal do menu.
     /// </summary>
     /// <remarks>
-    /// Comportamento:
-    /// - Limpa o console a cada iteração.
-    /// - Exibe as opções disponíveis.
-    /// - Lê a escolha do usuário.
-    /// - Se a opção existir no dicionário, executa o menu correspondente.
-    /// - Caso contrário, informa que a opção é inválida.
+    /// Fluxo atual:
+    /// - Limpa o console.
+    /// - Exibe as opções do menu chamando <see cref="MostrarMenu"/>.
+    /// - Lê a escolha do usuário via <see cref="ParseEscolha"/>.
+    /// - Se a opção existir no dicionário <see cref="Opcoes"/>, executa o menu correspondente.
+    /// - Caso contrário, exibe "Opcao invalida".
     /// - Aguarda uma tecla antes de reiniciar o loop.
-    /// 
-    /// O método executa indefinidamente (while true).
+    /// - O loop é contínuo e não possui condição de saída.
     /// </remarks>
     public override void Executar()
     {
@@ -74,25 +81,25 @@ internal class MenuPrincipal : Menu
     /// Lê a entrada do usuário e tenta convertê-la para inteiro.
     /// </summary>
     /// <returns>
-    /// O número digitado pelo usuário.
-    /// Caso a conversão falhe, retorna 0.
+    /// Número digitado pelo usuário.
+    /// Retorna 0 caso a conversão falhe.
     /// </returns>
-    int ParseEscolha()
+    private int ParseEscolha()
     {
         int.TryParse(Console.ReadLine()!, out int escolha);
         return escolha;
     }
 
     /// <summary>
-    /// Exibe as opções disponíveis no menu principal.
+    /// Exibe as opções iniciais disponíveis no menu principal.
     /// </summary>
     /// <remarks>
-    /// As opções exibidas são:
+    /// Opções atuais exibidas:
     /// 1 - Fazer uma reserva
     /// 2 - Exibir Hoteis
     /// 3 - Inserir um Hotel
     /// </remarks>
-    void MostrarMenu()
+    private void MostrarMenu()
     {
         Console.WriteLine("OPCOES INICIAIS");
         Console.WriteLine("1 - Fazer uma reserva");

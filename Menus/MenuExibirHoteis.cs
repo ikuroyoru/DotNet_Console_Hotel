@@ -1,11 +1,19 @@
 ﻿namespace DotNet_Console_Hotel.Menus;
 
+using DotNet_Console_Hotel.Models;
+
 /// <summary>
-/// Menu responsável por exibir a lista de hotéis cadastrados.
+/// Menu responsável por exibir a lista de hotéis cadastrados no sistema.
 /// </summary>
 /// <remarks>
 /// Este menu consulta o <see cref="HotelService"/> para obter
-/// os hotéis armazenados e exibe suas informações no console.
+/// os hotéis armazenados e apresenta suas informações no console.
+///
+/// Comportamento atual:
+/// - Exibe um título de seção "LISTA DE HOTEIS".
+/// - Obtém todos os hotéis por meio do serviço.
+/// - Para cada hotel, exibe o nome e a quantidade total de quartos cadastrados.
+/// - Caso não existam hotéis cadastrados, apenas o título será exibido.
 /// </remarks>
 internal class MenuExibirHoteis : Menu
 {
@@ -23,18 +31,13 @@ internal class MenuExibirHoteis : Menu
     }
 
     /// <summary>
-    /// Executa a exibição da lista de hotéis.
+    /// Executa a exibição dos hotéis no console.
     /// </summary>
     /// <remarks>
-    /// Comportamento:
-    /// - Exibe um título no console.
-    /// - Obtém todos os hotéis por meio do serviço.
-    /// - Para cada hotel, exibe:
-    ///   - Nome
-    ///   - Quantidade total de quartos
-    /// 
-    /// Caso não existam hotéis cadastrados,
-    /// nada será exibido além do título.
+    /// Fluxo:
+    /// - Exibe o título do menu.
+    /// - Recupera a lista de hotéis cadastrados do <see cref="HotelService"/>.
+    /// - Itera sobre cada hotel e exibe seu nome e quantidade de quartos.
     /// </remarks>
     public override void Executar()
     {
@@ -42,11 +45,11 @@ internal class MenuExibirHoteis : Menu
 
         IReadOnlyList<Hotel> Hoteis = _hotelService.ObterHoteis();
 
+        
+
         foreach (Hotel hotel in Hoteis)
         {
-            int qtdQuartos = hotel.Quartos.Count();
-
-            Console.WriteLine($"Hotel: {hotel.Nome} | Quartos: {qtdQuartos}");
+            Console.WriteLine($"Hotel: {hotel.Nome} | Quartos: {hotel.Quartos.Count()}");
         }
     }
 }

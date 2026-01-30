@@ -1,4 +1,5 @@
 ﻿using System;
+using DotNet_Console_Hotel.Models;
 
 /// <summary>
 /// Repositório responsável pelo armazenamento de instâncias de <see cref="Hotel"/>.
@@ -14,7 +15,8 @@ internal class HotelRepositorio
     /// Lista interna que armazena os hotéis cadastrados.
     /// </summary>
     /// <remarks>
-    /// A lista é pública e pode ser modificada diretamente.
+    /// A lista é pública, mas idealmente apenas leitura deve ser exposta.
+    /// A modificação direta deve ser evitada fora desta classe.
     /// </remarks>
     public List<Hotel> Hoteis = new();
 
@@ -35,7 +37,7 @@ internal class HotelRepositorio
     /// </returns>
     /// <remarks>
     /// A lista retornada não pode ser modificada externamente,
-    /// porém a lista interna do repositório continua mutável.
+    /// garantindo proteção da coleção interna.
     /// </remarks>
     public IReadOnlyList<Hotel> ObterTodos()
     {

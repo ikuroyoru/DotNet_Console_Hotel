@@ -27,6 +27,6 @@ internal class Menu
     /// </remarks>
     public virtual void Executar()
     {
-        Console.Clear();
+        // Console.Clear();
     }
 }

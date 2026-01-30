@@ -22,27 +22,39 @@
 
 using DotNet_Console_Hotel.Menus;
 using DotNet_Console_Hotel.Services;
+using DotNet_Console_Hotel.Repositorios;
+using DotNet_Console_Hotel.Models;
 
+var sessaoService = new SessaoService();
 var hotelRepositorio = new HotelRepositorio();
-var hotelService = new HotelService(hotelRepositorio);
-var reservaService = new ReservaService();
+var quartoRepositorio = new QuartoRepositorio();
+var quartoService = new QuartoService(quartoRepositorio);
+var hotelService = new HotelService(hotelRepositorio, quartoService);
+var clienteRepositorio = new ClienteRepositorio(); 
+var clienteService = new ClienteService(clienteRepositorio);
+var reservaService = new ReservaService(quartoService, clienteService);
+var autenticacaoService = new AutenticacaoService(clienteService, sessaoService);
+var menu = new Menu();
 
 
 var opcoes = new Dictionary<int, Menu>
 {
-    { 1, new MenuCriarReserva(hotelService, reservaService) },
+    { 1, new MenuCriarReserva(hotelService, reservaService, sessaoService) },
     { 2, new MenuExibirHoteis(hotelService) },
     { 3, new MenuAdicionarHotel(hotelService) }
+    //{ 4, new ExibirReservar() } // Exibe as reservas do usuario atualmente logado
+    //{ 5, new CancelarReservar() } // Cencela uma reserva selecionada pelo usuario logado, atualiza os status conforme o cancelamento
+    //{ 6, new MenuSair() } // Opcional: Implementar um menu para sair da aplicação
 };
 
-
-var menu = new Menu();
 var menuPrincipal = new MenuPrincipal(opcoes);
+var menuAutenticacao = new MenuAutenticacao(autenticacaoService, menuPrincipal);
 
+clienteService.AdicionarCliente("Admin", "000.000.000-00", "admin123");
 
 hotelService.CriarHotel("Parada Legal", "20");
 hotelService.CriarHotel("Canto Divertido", "15");
 
-menuPrincipal.Executar();
+menuAutenticacao.Executar();
 
 Console.ReadKey();

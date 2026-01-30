@@ -1,58 +1,65 @@
 ﻿using DotNet_Console_Hotel.Services;
-using System.Runtime.ExceptionServices;
+using DotNet_Console_Hotel.Models;
 
 namespace DotNet_Console_Hotel.Menus;
 
 /// <summary>
-/// Menu responsável pelo fluxo de criação de uma reserva.
+/// Menu responsável pelo fluxo de criação de uma reserva para um usuário logado.
 /// </summary>
 /// <remarks>
-/// Fluxo executado:
-/// - Permite ao usuário selecionar um hotel.
-/// - Define datas de entrada e saída.
-/// - Solicita ao <see cref="ReservaService"/> a atribuição de um quarto.
+/// Este menu coordena a criação de reservas, delegando a lógica de atribuição de quartos
+/// ao <see cref="ReservaService"/> e utilizando o <see cref="SessaoService"/>
+/// para obter o usuário atualmente autenticado.
+/// 
+/// Fluxo:
+/// - Permite ao usuário selecionar um hotel disponível.
+/// - Define datas de entrada e saída (automaticamente no momento).
+/// - Solicita ao <see cref="ReservaService"/> a criação da reserva.
 /// - Exibe o resultado da operação no console.
 /// 
-/// A seleção de datas atualmente não é interativa.
-/// Datas são definidas automaticamente pelos métodos internos.
+/// Observações:
+/// - A seleção de datas não é interativa; datas são definidas pelos métodos internos.
+/// - Caso o usuário cancele a seleção de hotel, retorna ao menu anterior.
+/// - O menu não valida login; assume que o <see cref="SessaoService"/> já gerencia o estado de autenticação.
 /// </remarks>
 internal class MenuCriarReserva : Menu
 {
     private readonly HotelService _hotelService;
 
     /// <summary>
-    /// Serviço responsável por atribuir quartos disponíveis.
+    /// Serviço responsável por atribuir quartos disponíveis e criar reservas.
     /// </summary>
-    /// <remarks>
-    /// Instância criada internamente na classe.
-    /// </remarks>
-    ReservaService reservaService = new();
+    ReservaService _reservaService;
+
+    /// <summary>
+    /// Serviço que gerencia o usuário atualmente logado.
+    /// </summary>
+    SessaoService _sessaoService;
 
     /// <summary>
     /// Inicializa uma nova instância de <see cref="MenuCriarReserva"/>.
     /// </summary>
-    /// <param name="hotelService">
-    /// Serviço responsável por fornecer os hotéis cadastrados.
-    /// </param>
-    /// <param name="reservaService">
-    /// Parâmetro recebido no construtor, mas não utilizado internamente.
-    /// </param>
-    public MenuCriarReserva(HotelService hotelService, ReservaService reservaService)
+    /// <param name="hotelService">Serviço para obter hotéis disponíveis.</param>
+    /// <param name="reservaService">Serviço responsável por criar reservas e atribuir quartos.</param>
+    /// <param name="sessaoService">Serviço responsável por gerenciar o usuário logado.</param>
+    public MenuCriarReserva(HotelService hotelService, ReservaService reservaService, SessaoService sessaoService)
     {
         _hotelService = hotelService;
+        _reservaService = reservaService;
+        _sessaoService = sessaoService;
     }
 
     /// <summary>
-    /// Executa o fluxo de criação de reserva.
+    /// Executa o fluxo principal de criação de reserva.
     /// </summary>
     /// <remarks>
-    /// Comportamento:
-    /// - Executa comportamento base da classe Menu.
-    /// - Solicita seleção de hotel.
-    /// - Caso o usuário cancele, retorna ao menu anterior.
-    /// - Define datas de entrada e saída.
-    /// - Solicita ao serviço a atribuição de um quarto.
-    /// - Exibe mensagem de sucesso ou erro.
+    /// Fluxo atual:
+    /// - Executa o comportamento base da classe <see cref="Menu"/>.
+    /// - Solicita seleção de hotel. Caso cancelado, retorna.
+    /// - Obtém usuário logado via <see cref="SessaoService"/>.
+    /// - Define datas de entrada e saída automaticamente.
+    /// - Chama <see cref="ReservaService.AtribuirQuarto"/> para criar a reserva.
+    /// - Exibe a mensagem de sucesso ou erro no console.
     /// </remarks>
     public override void Executar()
     {
@@ -66,6 +73,14 @@ internal class MenuCriarReserva : Menu
             return;
         }
 
+        string usuarioLogado = _sessaoService.ObterUsuarioLogado();
+
+        if (usuarioLogado == null)
+        {
+            Console.WriteLine("Ocorreu um erro inesperado: Usuario nao autenticado");
+            return;
+        }
+
         Console.WriteLine($"SELECIONANDO DATA PARA RESERVA NO HOTEL : {hotelEscolhido.Nome}");
 
         DateTime dataEntrada = SelecionarDataInicio();
@@ -74,7 +89,7 @@ internal class MenuCriarReserva : Menu
         DateTime dataSaida = SelecionarDataFim();
         Console.WriteLine($"Data saida: {dataSaida} ");
 
-        var reserva = reservaService.AtribuirQuarto(hotelEscolhido, dataEntrada, dataSaida);
+        var reserva = _reservaService.AtribuirQuarto(hotelEscolhido, usuarioLogado, dataEntrada, dataSaida);
 
         if (!reserva.sucesso)
         {
@@ -90,14 +105,13 @@ internal class MenuCriarReserva : Menu
     /// Permite ao usuário selecionar um hotel pelo nome.
     /// </summary>
     /// <returns>
-    /// O hotel selecionado ou null caso o usuário pressione ESC.
+    /// O hotel selecionado ou <c>null</c> caso o usuário cancele pressionando ESC.
     /// </returns>
     /// <remarks>
-    /// O método:
     /// - Exibe a lista de hotéis disponíveis.
-    /// - Solicita o nome do hotel.
-    /// - Realiza busca exata pelo nome.
-    /// - Permite cancelar pressionando a tecla ESC.
+    /// - Solicita o nome do hotel para seleção.
+    /// - Busca o hotel pelo nome exato.
+    /// - Permite cancelar a operação pressionando ESC.
     /// </remarks>
     Hotel? SelecionarHotel()
     {
@@ -138,13 +152,11 @@ internal class MenuCriarReserva : Menu
     }
 
     /// <summary>
-    /// Define a data de entrada da reserva.
+    /// Retorna a data de início da reserva.
     /// </summary>
-    /// <returns>
-    /// Data atual do sistema.
-    /// </returns>
+    /// <returns>Data atual do sistema.</returns>
     /// <remarks>
-    /// Atualmente não há interação com o usuário.
+    /// Atualmente o método não permite interação do usuário e retorna sempre DateTime.Now.
     /// </remarks>
     DateTime SelecionarDataInicio()
     {
@@ -152,13 +164,11 @@ internal class MenuCriarReserva : Menu
     }
 
     /// <summary>
-    /// Define a data de saída da reserva.
+    /// Retorna a data de término da reserva.
     /// </summary>
-    /// <returns>
-    /// Data atual acrescida de 7 dias.
-    /// </returns>
+    /// <returns>Data atual acrescida de 7 dias.</returns>
     /// <remarks>
-    /// Atualmente não há interação com o usuário.
+    /// Atualmente o método não permite interação do usuário.
     /// </remarks>
     DateTime SelecionarDataFim()
     {

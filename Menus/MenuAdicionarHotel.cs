@@ -1,12 +1,13 @@
 ﻿namespace DotNet_Console_Hotel.Menus;
 
 /// <summary>
-/// Menu responsável pela criação de novos hotéis.
+/// Menu responsável pela adição de novos hotéis ao sistema.
 /// </summary>
 /// <remarks>
-/// Este menu coleta os dados informados pelo usuário
-/// e delega a criação do hotel ao <see cref="HotelService"/>.
-/// Não realiza validações diretamente.
+/// Este menu coleta informações do usuário (nome do hotel e quantidade de quartos)
+/// e delega a criação do hotel para o <see cref="HotelService"/>.
+/// A validação dos dados e a criação efetiva do hotel são totalmente
+/// responsabilidade do serviço.
 /// </remarks>
 internal class MenuAdicionarHotel : Menu
 {
@@ -16,7 +17,7 @@ internal class MenuAdicionarHotel : Menu
     /// Inicializa uma nova instância de <see cref="MenuAdicionarHotel"/>.
     /// </summary>
     /// <param name="hotelService">
-    /// Serviço responsável por validar e criar o hotel.
+    /// Serviço utilizado para criar o hotel e validar os dados informados.
     /// </param>
     public MenuAdicionarHotel(HotelService hotelService)
     {
@@ -24,18 +25,18 @@ internal class MenuAdicionarHotel : Menu
     }
 
     /// <summary>
-    /// Executa o fluxo de criação de hotel.
+    /// Executa o fluxo de adição de um hotel.
     /// </summary>
     /// <remarks>
-    /// Comportamento:
-    /// - Executa o comportamento base da classe Menu.
-    /// - Solicita ao usuário o nome do hotel.
-    /// - Solicita a quantidade de quartos.
-    /// - Envia os dados ao <see cref="HotelService"/>.
+    /// Fluxo atual:
+    /// - Exibe o título do menu.
+    /// - Solicita ao usuário o nome do hotel e a quantidade de quartos.
+    /// - Chama <see cref="HotelService.CriarHotel(string, string)"/> com os dados informados.
     /// - Exibe a mensagem retornada pelo serviço.
     /// 
-    /// A validação dos dados (nome vazio, quantidade inválida, etc.)
-    /// é realizada exclusivamente pelo serviço.
+    /// Observações:
+    /// - Nenhuma validação de entrada é feita neste menu; tudo é delegado ao serviço.
+    /// - Base da classe <see cref="Menu"/> é executado antes do fluxo específico.
     /// </remarks>
     public override void Executar()
     {
