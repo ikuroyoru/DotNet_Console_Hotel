@@ -1,39 +1,27 @@
 ﻿namespace DotNet_Console_Hotel.Repositorios;
 
+using Npgsql;
 using DotNet_Console_Hotel.Models;
 
-/// <summary>
-/// Repositório responsável por armazenar clientes do sistema.
-/// </summary>
-/// <remarks>
-/// Esta classe mantém uma lista interna de clientes e fornece métodos
-/// para consulta e adição de contas.  
-/// Não realiza persistência em banco de dados; todos os dados ficam em memória.
-/// </remarks>
 internal class ClienteRepositorio
-{
-    private readonly List<Cliente> _contas = new();
+{   
+    public ClienteRepositorio(NpgsqlConnection connection)
+    {
+        _connection = connection;
+    }
 
-    /// <summary>
-    /// Busca um cliente pelo CPF.
-    /// </summary>
-    /// <param name="cpf">CPF do cliente a ser buscado.</param>
-    /// <returns>
-    /// A instância de <see cref="Cliente"/> correspondente ao CPF,
-    /// ou null se não encontrado.
-    /// </returns>
+    NpgsqlConnection _connection;
+    private readonly List<Cliente> Clientes = new(); // TROCAR PELO BANCO DE DADOS
+
+
     public Cliente? BuscarPorCpf(string cpf)
     {
-        Cliente? cliente = _contas.FirstOrDefault(c => c.Cpf == cpf);
+        Cliente? cliente = Clientes.FirstOrDefault(c => c.Cpf == cpf);
         return cliente;
     }
 
-    /// <summary>
-    /// Adiciona um novo cliente ao repositório.
-    /// </summary>
-    /// <param name="conta">Cliente a ser adicionado.</param>
     public void Adicionar(Cliente conta)
     {
-        _contas.Add(conta);
+        Clientes.Add(conta);
     }
 }

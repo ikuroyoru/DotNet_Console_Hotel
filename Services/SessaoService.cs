@@ -51,13 +51,13 @@ internal class SessaoService
     /// <returns>
     /// CPF do cliente logado ou "Desconectado" se ninguém estiver logado.
     /// </returns>
-    public (bool status, string userId, string statusMensagem) ObterUsuarioLogado()
+    public (bool status, string userId) ObterUsuarioLogado()
     {
         if (IsLoggedIn)
         {
-            return (true, IdCliente, "Usuario Autenticado");
+            return (true, IdCliente);
         }
-        else return (false, "Usuario Desconectado", "Usuario Nao Autenticado");
+        else return (false, "Usuario Nao Conectado");
 
     }
 }

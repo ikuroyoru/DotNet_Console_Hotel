@@ -1,22 +1,23 @@
 ﻿using DotNet_Console_Hotel.Models;
+using DotNet_Console_Hotel.Repositorios;
 using System.Linq;
 
 namespace DotNet_Console_Hotel.Services;
 
 internal class ReservaService
 {
-    private readonly QuartoService _quartoService;
-    private readonly ClienteService _clienteService;
+    private readonly QuartoService _quartoService; // SUBSTITUIR POR QUARTO REPOSITORIO
     private readonly SessaoService _sessaoService;
+    private readonly ReservaRepositorio _reservaRepositorio;
 
-    public ReservaService(SessaoService sessaoService, QuartoService quartoService, ClienteService clienteService)
+    public ReservaService(SessaoService sessaoService, QuartoService quartoService, ReservaRepositorio reservaRepositorio)
     {
         _quartoService = quartoService;
-        _clienteService = clienteService;
         _sessaoService = sessaoService;
+        _reservaRepositorio = reservaRepositorio;
     }
 
-    public (string mensagem, bool sucesso) AtribuirQuarto(Hotel hotel, DateTime dataEntrada, DateTime dataSaida)
+    public (string mensagem, bool sucesso) CriarReserva(Hotel hotel, DateTime dataEntrada, DateTime dataSaida)
     {
         var usuarioLogado = _sessaoService.ObterUsuarioLogado();
         var userId = usuarioLogado.userId;
@@ -30,6 +31,10 @@ internal class ReservaService
         if (dataSaida <= dataEntrada)
             return ("A data de saida deve ser posterior à data de entrada.", false);
 
+
+        // DEVE OBTER OS QUARTOS DE UM HOTEL COM QuartoService
+        // FILTRA OS QUARTOS DO HOTEL PARA ENCONTRAR UM QUE NAO TENHA RESERVAS CONFLITANTES COM AS DATAS DE ENTRADA E SAIDA SELECIONADAS PELO USUÁRIO
+        // FILTRO DEVE OCORRER EM RESERVAREPOSITORIO
         var quartoDisponivel = hotel.Quartos
             .FirstOrDefault(quarto =>
                 !quarto.Reservas.Any(reserva =>
@@ -41,18 +46,11 @@ internal class ReservaService
         if (quartoDisponivel == null)
             return ($"Nenhum quarto disponivel para o periodo {dataEntrada:yyyy-MM-dd} a {dataSaida:yyyy-MM-dd}. Por favor, selecione outra data.", false);
 
-
         // Cria a reserva com dados verificados e consistentes. Reserva nao e criada se o usuario nao estiver autenticado ou se o cliente nao for encontrado
-        Reserva reserva = new Reserva(dataEntrada, dataSaida, hotel.Nome, userId, quartoDisponivel.Numero); // NECESSARIO ASSOCIAR O HOTEL.ID E NAO HOTEL.NOME
+        Reserva reserva = new Reserva(dataEntrada, dataSaida, userId, quartoDisponivel.id); // NECESSARIO ASSOCIAR O HOTEL.ID E NAO HOTEL.NOME
 
-        // UMA RESERVA DEVE SER CRIADA COM IDS E NAO COM OBJETOS DE CLIENTE OU QUARTO. - DEVE TER QUARTO.ID / USER.ID
-        var reservaCliente = _clienteService.AtribuirReserva(reserva, userId);
+        _reservaRepositorio.AdicionarReserva(reserva);
 
-        if (reservaCliente)
-        {
-            _quartoService.AtribuirReserva(reserva, quartoDisponivel);
-            return ($"O quarto {quartoDisponivel.Numero} foi reservado com sucesso para {dataEntrada:yyyy-MM-dd} a {dataSaida:yyyy-MM-dd}.", true);
-        }
-        else return ("Ocorreu um erro ao realizar a reserva. Por favor, tente novamente.", false);
+        return ($"O quarto {quartoDisponivel.id} foi reservado com sucesso para {dataEntrada:yyyy-MM-dd} a {dataSaida:yyyy-MM-dd}.", true);
     }
 }

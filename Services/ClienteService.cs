@@ -16,38 +16,21 @@ namespace DotNet_Console_Hotel.Services;
 internal class ClienteService
 {
     private readonly ClienteRepositorio _clienteRepositorio;
-    private readonly SessaoService _sessaoService;
 
     /// <summary>
     /// Inicializa uma nova instância de <see cref="ClienteService"/>.
     /// </summary>
     /// <param name="clienteRepositorio">Repositório utilizado para armazenar e consultar clientes.</param>
-    public ClienteService(SessaoService sessaoService, ClienteRepositorio clienteRepositorio)
+    public ClienteService(ClienteRepositorio clienteRepositorio)
     {
         _clienteRepositorio = clienteRepositorio;
-        _sessaoService = sessaoService;
     }
 
     // Adiciona cliente ao sistema
-    public void AdicionarCliente(string nome, string cpf, string senha)
+    public void NovoCliente(string nome, string cpf, string senha)
     {
         var cliente = new Cliente(nome, cpf, senha);
         _clienteRepositorio.Adicionar(cliente);
-    }
-
-    public bool AtribuirReserva(Reserva reserva, string userId) // DEVE VALIDAR SE O CLIENTE NAO POSSUIR OUTRAS RESERVAS CONFLITANTES PARA O MESMO PERIODO, MAS ISSO DEVE SER FEITO ANTES DE CRIAR A RESERVA, POIS SE O USUÁRIO NAO ESTIVER AUTENTICADO OU SE O CLIENTE NAO FOR ENCONTRADO, A RESERVA NAO DEVE SER CRIADA
-    {
-        var user = BuscarCliente(userId);
-
-        if (user == null)
-        {
-            return false;
-        }
-        else
-        {
-            user.AdicionarReserva(reserva);
-            return true;
-        }
     }
 
     // Busca cliente pelo id/cpf

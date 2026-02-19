@@ -24,48 +24,16 @@ internal class Quarto
     /// <param name="hotelId">Identificador do hotel ao qual o quarto pertence.</param>
     public Quarto(int numero, string categoria, string hotelId)
     {
+        id = numero;
         Numero = numero;
         Categoria = categoria;
         HotelId = hotelId;
     }
 
-    /// <summary>
-    /// Número identificador do quarto.
-    /// </summary>
-    public int Numero { get; }
-
-    /// <summary>
-    /// Categoria do quarto (ex: Standard, Premium).
-    /// </summary>
+    public int id { get; } // IDENTIFICADOR UNICO DO QUARTO, GERADO AUTOMATICAMENTE, PARA GARANTIR QUE MESMO QUARTOS DE HOTEIS DIFERENTES TENHAM IDENTIFICADORES DISTINTOS
+    public int Numero { get; } // PARA QUARTOS DE UM MESMO HOTEL -> NUMEROS DIFERENTES, PARA QUARTOS DE HOTEIS DIFERENTES _> NUMEROS PODEM SE REPETIR, POIS O IDENTIFICADOR UNICO DO QUARTO SERA O ID GERADO AUTOMATICAMENTE, E NAO O NUMERO
     public string Categoria { get; }
-
-    /// <summary>
-    /// Identificador do hotel ao qual o quarto pertence.
-    /// </summary>
     public string HotelId { get; }
+    public List<Reserva> Reservas { get; private set; } = new(); // ISSO NAO DEVE MAIS EXISTIR, POIS RESERVAS SAO REFERENCIADAS POR ID
 
-    /// <summary>
-    /// Lista de reservas associadas ao quarto.
-    /// </summary>
-    /// <remarks>
-    /// A lista é pública para leitura e modificação.
-    /// Novas reservas podem ser adicionadas por meio do método <see cref="AdicionarReserva"/>.
-    /// </remarks>
-    public List<Reserva> Reservas { get; private set; } = new();
-
-    /// <summary>
-    /// Adiciona uma reserva à lista de reservas do quarto.
-    /// </summary>
-    /// <param name="reserva">Reserva a ser adicionada.</param>
-    /// <remarks>
-    /// Cria uma instância de <see cref="Reserva"/> (ou recebe uma existente)
-    /// e adiciona à lista interna.
-    /// 
-    /// Não há verificação de conflito de datas; a responsabilidade de validar
-    /// a disponibilidade é externa.
-    /// </remarks>
-    public void AdicionarReserva(Reserva reserva)
-    {
-        Reservas.Add(reserva);
-    }
 }

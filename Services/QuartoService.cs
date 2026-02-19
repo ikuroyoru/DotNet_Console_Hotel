@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DotNet_Console_Hotel.Models;
+using DotNet_Console_Hotel.Repositorios;
 
 namespace DotNet_Console_Hotel.Services;
 
@@ -13,11 +14,6 @@ internal class QuartoService
         _quartoRepositorio = quartoRepositorio;
     }
 
-    public void AtribuirReserva(Reserva reserva, Quarto quarto)
-    {
-        quarto.AdicionarReserva(reserva);
-    }
-
     public Quarto? BuscarQuarto(string hotelId, int numero)
     {
         return _quartoRepositorio.ObterPorNumero(hotelId, numero);
@@ -26,6 +22,7 @@ internal class QuartoService
     public List<Quarto> GerarQuartos(int quantidadeDeQuartos, string nomeHotel)
     // HOTEL PODE MUDAR DE NOME, ENTAO AS REFERENCIAS PODEM SER PERDIDAS
     // GERAR QUARTOS DEVE SER RESPONSABILIDADE DO HOTEL, POIS OS QUARTOS SAO PROPRIEDADE DO HOTEL, E NAO DE UM SERVICO EXTERNO
+    // CADA QUARTO DEVE POSSUIR UM ID DISTINTO< MESMO QUE SEJAM DE HOTEIS DIFERENTES
     {
         var _quartos = new List<Quarto>();
 

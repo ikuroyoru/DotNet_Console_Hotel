@@ -28,7 +28,7 @@ internal class AutenticacaoService
 
         var CpfPadronizado = PadronizarCpf(CpfNormalizado);
 
-        _clienteService.AdicionarCliente(nome, CpfPadronizado, senha);
+        _clienteService.NovoCliente(nome, CpfPadronizado, senha);
 
         var resultado = Login(cpf, senha);
         return (resultado.sucesso, "Conta criada com sucesso! Seja Bem-vindo(a) " + nome);

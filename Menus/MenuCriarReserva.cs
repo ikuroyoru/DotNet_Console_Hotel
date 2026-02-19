@@ -54,7 +54,7 @@ internal class MenuCriarReserva : Menu
         DateTime dataSaida = SelecionarDataFim();
         Console.WriteLine($"Data saida: {dataSaida} ");
 
-        var reserva = _reservaService.AtribuirQuarto(hotelEscolhido, dataEntrada, dataSaida);
+        var reserva = _reservaService.CriarReserva(hotelEscolhido, dataEntrada, dataSaida);
 
         if (!reserva.sucesso)
         {

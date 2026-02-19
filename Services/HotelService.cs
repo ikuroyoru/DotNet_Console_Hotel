@@ -1,6 +1,7 @@
 ﻿using System;
 using DotNet_Console_Hotel.Models;
 using DotNet_Console_Hotel.Services;
+using DotNet_Console_Hotel.Repositorios;
 
 internal class HotelService
 {
