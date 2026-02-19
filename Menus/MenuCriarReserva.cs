@@ -26,41 +26,14 @@ internal class MenuCriarReserva : Menu
 {
     private readonly HotelService _hotelService;
 
-    /// <summary>
-    /// Serviço responsável por atribuir quartos disponíveis e criar reservas.
-    /// </summary>
     ReservaService _reservaService;
 
-    /// <summary>
-    /// Serviço que gerencia o usuário atualmente logado.
-    /// </summary>
-    SessaoService _sessaoService;
-
-    /// <summary>
-    /// Inicializa uma nova instância de <see cref="MenuCriarReserva"/>.
-    /// </summary>
-    /// <param name="hotelService">Serviço para obter hotéis disponíveis.</param>
-    /// <param name="reservaService">Serviço responsável por criar reservas e atribuir quartos.</param>
-    /// <param name="sessaoService">Serviço responsável por gerenciar o usuário logado.</param>
-    public MenuCriarReserva(HotelService hotelService, ReservaService reservaService, SessaoService sessaoService)
+    public MenuCriarReserva(HotelService hotelService, ReservaService reservaService)
     {
         _hotelService = hotelService;
         _reservaService = reservaService;
-        _sessaoService = sessaoService;
     }
 
-    /// <summary>
-    /// Executa o fluxo principal de criação de reserva.
-    /// </summary>
-    /// <remarks>
-    /// Fluxo atual:
-    /// - Executa o comportamento base da classe <see cref="Menu"/>.
-    /// - Solicita seleção de hotel. Caso cancelado, retorna.
-    /// - Obtém usuário logado via <see cref="SessaoService"/>.
-    /// - Define datas de entrada e saída automaticamente.
-    /// - Chama <see cref="ReservaService.AtribuirQuarto"/> para criar a reserva.
-    /// - Exibe a mensagem de sucesso ou erro no console.
-    /// </remarks>
     public override void Executar()
     {
         base.Executar();
@@ -73,14 +46,6 @@ internal class MenuCriarReserva : Menu
             return;
         }
 
-        string usuarioLogado = _sessaoService.ObterUsuarioLogado();
-
-        if (usuarioLogado == null)
-        {
-            Console.WriteLine("Ocorreu um erro inesperado: Usuario nao autenticado");
-            return;
-        }
-
         Console.WriteLine($"SELECIONANDO DATA PARA RESERVA NO HOTEL : {hotelEscolhido.Nome}");
 
         DateTime dataEntrada = SelecionarDataInicio();
@@ -89,7 +54,7 @@ internal class MenuCriarReserva : Menu
         DateTime dataSaida = SelecionarDataFim();
         Console.WriteLine($"Data saida: {dataSaida} ");
 
-        var reserva = _reservaService.AtribuirQuarto(hotelEscolhido, usuarioLogado, dataEntrada, dataSaida);
+        var reserva = _reservaService.AtribuirQuarto(hotelEscolhido, dataEntrada, dataSaida);
 
         if (!reserva.sucesso)
         {

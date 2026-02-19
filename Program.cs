@@ -24,22 +24,25 @@ using DotNet_Console_Hotel.Menus;
 using DotNet_Console_Hotel.Services;
 using DotNet_Console_Hotel.Repositorios;
 using DotNet_Console_Hotel.Models;
+using System.Reflection.Metadata;
 
 var sessaoService = new SessaoService();
 var hotelRepositorio = new HotelRepositorio();
 var quartoRepositorio = new QuartoRepositorio();
+var clienteRepositorio = new ClienteRepositorio();
+
 var quartoService = new QuartoService(quartoRepositorio);
 var hotelService = new HotelService(hotelRepositorio, quartoService);
-var clienteRepositorio = new ClienteRepositorio(); 
-var clienteService = new ClienteService(clienteRepositorio);
-var reservaService = new ReservaService(quartoService, clienteService);
-var autenticacaoService = new AutenticacaoService(clienteService, sessaoService);
+var clienteService = new ClienteService(sessaoService, clienteRepositorio);
+var reservaService = new ReservaService(sessaoService, quartoService, clienteService);
+var autenticacaoService = new AutenticacaoService(sessaoService, clienteService);
+
 var menu = new Menu();
 
 
 var opcoes = new Dictionary<int, Menu>
 {
-    { 1, new MenuCriarReserva(hotelService, reservaService, sessaoService) },
+    { 1, new MenuCriarReserva(hotelService, reservaService) },
     { 2, new MenuExibirHoteis(hotelService) },
     { 3, new MenuAdicionarHotel(hotelService) }
     //{ 4, new ExibirReservar() } // Exibe as reservas do usuario atualmente logado
@@ -58,3 +61,5 @@ hotelService.CriarHotel("Canto Divertido", "15");
 menuAutenticacao.Executar();
 
 Console.ReadKey();
+
+

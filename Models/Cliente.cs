@@ -58,5 +58,10 @@ internal class Cliente
     public void AdicionarReserva(Reserva reserva)
     {
         Reservas.Add(reserva);
+
+        foreach (var r in Reservas)
+        {
+            Console.WriteLine($"Reserva adicionada para o cliente {Nome}: {r.NomeHotel} - Quarto {r.NumeroQuarto} de {r.DataEntrada:yyyy-MM-dd} a {r.DataSaida:yyyy-MM-dd}");
+        }
     }
 }

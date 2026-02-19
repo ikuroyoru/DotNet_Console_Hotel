@@ -17,6 +17,7 @@ internal class SessaoService
     /// Valor padrão é "Desconectado".
     /// </remarks>
     public string IdCliente { get; private set; } = "Desconectado";
+    public bool IsLoggedIn { get; private set; }
 
     /// <summary>
     /// Inicializa uma nova instância de <see cref="SessaoService"/>.
@@ -34,6 +35,14 @@ internal class SessaoService
     {
         IdCliente = idCliente;
         Console.WriteLine($"Sessão iniciada para o usuário: {IdCliente}");
+        IsLoggedIn = true;
+    }
+
+    public void EncerrarSessao(string idCliente)
+    {
+        IdCliente = "Desconectado";
+        Console.WriteLine($"Sessão encerrada para o usuário: {idCliente}");
+        IsLoggedIn = false;
     }
 
     /// <summary>
@@ -42,8 +51,13 @@ internal class SessaoService
     /// <returns>
     /// CPF do cliente logado ou "Desconectado" se ninguém estiver logado.
     /// </returns>
-    public string ObterUsuarioLogado()
+    public (bool status, string userId, string statusMensagem) ObterUsuarioLogado()
     {
-        return IdCliente;
+        if (IsLoggedIn)
+        {
+            return (true, IdCliente, "Usuario Autenticado");
+        }
+        else return (false, "Usuario Desconectado", "Usuario Nao Autenticado");
+
     }
 }

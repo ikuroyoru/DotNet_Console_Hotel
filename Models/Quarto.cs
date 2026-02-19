@@ -51,7 +51,7 @@ internal class Quarto
     /// A lista é pública para leitura e modificação.
     /// Novas reservas podem ser adicionadas por meio do método <see cref="AdicionarReserva"/>.
     /// </remarks>
-    public List<Reserva> Reservas { get; set; } = new();
+    public List<Reserva> Reservas { get; private set; } = new();
 
     /// <summary>
     /// Adiciona uma reserva à lista de reservas do quarto.

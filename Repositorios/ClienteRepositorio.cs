@@ -24,7 +24,8 @@ internal class ClienteRepositorio
     /// </returns>
     public Cliente? BuscarPorCpf(string cpf)
     {
-        return _contas.FirstOrDefault(c => c.Cpf == cpf);
+        Cliente? cliente = _contas.FirstOrDefault(c => c.Cpf == cpf);
+        return cliente;
     }
 
     /// <summary>

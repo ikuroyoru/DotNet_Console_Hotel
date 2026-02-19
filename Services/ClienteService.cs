@@ -16,46 +16,41 @@ namespace DotNet_Console_Hotel.Services;
 internal class ClienteService
 {
     private readonly ClienteRepositorio _clienteRepositorio;
+    private readonly SessaoService _sessaoService;
 
     /// <summary>
     /// Inicializa uma nova instância de <see cref="ClienteService"/>.
     /// </summary>
     /// <param name="clienteRepositorio">Repositório utilizado para armazenar e consultar clientes.</param>
-    public ClienteService(ClienteRepositorio clienteRepositorio)
+    public ClienteService(SessaoService sessaoService, ClienteRepositorio clienteRepositorio)
     {
         _clienteRepositorio = clienteRepositorio;
+        _sessaoService = sessaoService;
     }
 
-    /// <summary>
-    /// Adiciona um novo cliente ao sistema.
-    /// </summary>
-    /// <param name="nome">Nome completo do cliente.</param>
-    /// <param name="cpf">CPF do cliente.</param>
-    /// <param name="senha">Senha escolhida pelo cliente.</param>
+    // Adiciona cliente ao sistema
     public void AdicionarCliente(string nome, string cpf, string senha)
     {
         var cliente = new Cliente(nome, cpf, senha);
         _clienteRepositorio.Adicionar(cliente);
     }
 
-    /// <summary>
-    /// Adiciona uma reserva a um cliente existente.
-    /// </summary>
-    /// <param name="reserva">Reserva a ser associada ao cliente.</param>
-    /// <exception cref="Exception">Lançada quando o cliente não é encontrado no repositório.</exception>
-    public void AdicionarReserva(Reserva reserva, Cliente cliente)
+    public bool AtribuirReserva(Reserva reserva, string userId) // DEVE VALIDAR SE O CLIENTE NAO POSSUIR OUTRAS RESERVAS CONFLITANTES PARA O MESMO PERIODO, MAS ISSO DEVE SER FEITO ANTES DE CRIAR A RESERVA, POIS SE O USUÁRIO NAO ESTIVER AUTENTICADO OU SE O CLIENTE NAO FOR ENCONTRADO, A RESERVA NAO DEVE SER CRIADA
     {
-        cliente.AdicionarReserva(reserva);
+        var user = BuscarCliente(userId);
+
+        if (user == null)
+        {
+            return false;
+        }
+        else
+        {
+            user.AdicionarReserva(reserva);
+            return true;
+        }
     }
 
-    /// <summary>
-    /// Busca um cliente pelo CPF.
-    /// </summary>
-    /// <param name="cpf">CPF do cliente a ser buscado.</param>
-    /// <returns>
-    /// Instância de <see cref="Cliente"/> correspondente ao CPF,
-    /// ou null se o cliente não for encontrado.
-    /// </returns>
+    // Busca cliente pelo id/cpf
     public Cliente? BuscarCliente(string cpf)
     {
         return _clienteRepositorio.BuscarPorCpf(cpf);
