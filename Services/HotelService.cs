@@ -14,24 +14,15 @@ internal class HotelService
         _quartoService = quartoService;
     }
 
-    public (bool sucesso, string mensagem) CriarHotel(string nome, string quantidadeDeQuartos)
+    public void CriarHotel()
     {
-        if (!(int.TryParse(quantidadeDeQuartos, out int qtdQuartos)))
-            return (false, "Entrada inválida: Quantidade de quartos deve ser um número inteiro.");
+        string caminhoArquivo = @"C:\caminho\para\arquivo.csv";
 
-        if (qtdQuartos <= 0)
-            return (false, "Um hotel deve possuir ao menos um quarto.");
-
-        if (string.IsNullOrWhiteSpace(nome))
-            return (false, "Um hotel deve possuir um nome válido.");
-
-        List<Quarto> quartos = _quartoService.GerarQuartos(qtdQuartos, nome);
-
-        Hotel hotel = new Hotel(nome, quartos);
-
-        _hotelRepositorio.Adicionar(hotel);
-
-        return (true, $"Hotel {hotel.Nome} criado com sucesso.");
+        using (StreamReader leitor = new StreamReader(caminhoArquivo))
+        {
+            string conteudo = leitor.ReadToEnd();  // lê todo o arquivo de uma vez
+            Console.WriteLine(conteudo);
+        }
     }
 
     public IReadOnlyList<Hotel> ObterHoteis()

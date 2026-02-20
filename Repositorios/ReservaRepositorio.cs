@@ -9,12 +9,12 @@ using System.Text;
 
 internal class ReservaRepositorio
 {
-    public ReservaRepositorio(NpgsqlConnection connection)
+    public ReservaRepositorio(string connection)
     {
-        _connection = connection;
+        connectionString = connection;
     }
 
-    NpgsqlConnection _connection;
+    string connectionString;
     public List<Reserva> Reservas = new(); // TROCAR PELO BANCO DE DADOS
 
     public void AdicionarReserva(Reserva reserva)

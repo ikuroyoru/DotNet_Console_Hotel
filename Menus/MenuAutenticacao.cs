@@ -36,18 +36,6 @@ internal class MenuAutenticacao : Menu
         _autenticacaoService = autenticacaoService;
         _menuPrincipal = menuPrincipal;
     }
-
-    /// <summary>
-    /// Executa o fluxo principal do menu de autenticação.
-    /// </summary>
-    /// <remarks>
-    /// Fluxo atual:
-    /// - Exibe o menu base da classe <see cref="Menu"/>.
-    /// - Mostra as opções de login ou criação de conta.
-    /// - Valida a escolha do usuário.
-    /// - Processa a opção escolhida chamando o formulário correspondente.
-    /// - Loop contínuo até que o usuário efetue login ou cadastro com sucesso.
-    /// </remarks>
     public override void Executar()
     {
         base.Executar();
@@ -59,10 +47,6 @@ internal class MenuAutenticacao : Menu
             Console.WriteLine("OPERACAO FINALIZADA");
         }
     }
-
-    /// <summary>
-    /// Exibe as opções disponíveis no menu de autenticação.
-    /// </summary>
     private void ExibirOpcoesAutenticacao()
     {
         Console.WriteLine("***** BEM-VINDO AO HotelIdeal.com *****\n");
@@ -72,11 +56,6 @@ internal class MenuAutenticacao : Menu
             Console.WriteLine($"{i + 1} - {_opcoesDeLogin[i]}");
         }
     }
-
-    /// <summary>
-    /// Valida a escolha do usuário no menu, garantindo que seja numérica e dentro do intervalo.
-    /// </summary>
-    /// <returns>Número da opção escolhida pelo usuário.</returns>
     private int ValidaEscolha()
     {
         bool opcaoValida = false;
@@ -106,11 +85,6 @@ internal class MenuAutenticacao : Menu
         }
         return escolha;
     }
-
-    /// <summary>
-    /// Processa a opção escolhida pelo usuário no menu de autenticação.
-    /// </summary>
-    /// <param name="escolha">Número da opção escolhida.</param>
     private void ProcessarOpcaoDeLogin(int escolha)
     {
         switch (escolha)
@@ -126,18 +100,6 @@ internal class MenuAutenticacao : Menu
                 break;
         }
     }
-
-    /// <summary>
-    /// Coleta informações do usuário e cria uma nova conta via <see cref="AutenticacaoService"/>.
-    /// </summary>
-    /// <remarks>
-    /// Fluxo:
-    /// - Solicita nome completo, CPF e senha.
-    /// - Verifica se a senha e confirmação coincidem.
-    /// - Chama <see cref="AutenticacaoService.Cadastrar"/> para criar a conta.
-    /// - Exibe mensagem de sucesso ou erro.
-    /// - Em caso de sucesso, direciona para o <see cref="MenuPrincipal"/>.
-    /// </remarks>
     private void FormularioDeCadastro()
     {
         Console.WriteLine("**** Criar uma conta ****");
@@ -176,17 +138,6 @@ internal class MenuAutenticacao : Menu
         Thread.Sleep(3000);
         _menuPrincipal.Executar();
     }
-
-    /// <summary>
-    /// Coleta informações do usuário e realiza login via <see cref="AutenticacaoService"/>.
-    /// </summary>
-    /// <remarks>
-    /// Fluxo:
-    /// - Solicita CPF e senha.
-    /// - Chama <see cref="AutenticacaoService.Login"/> para autenticação.
-    /// - Exibe mensagem de sucesso ou erro.
-    /// - Em caso de sucesso, direciona para o <see cref="MenuPrincipal"/>.
-    /// </remarks>
     private void FormularioDeLogin()
     {
         Console.WriteLine("***** LOGIN *****");

@@ -1,18 +1,19 @@
-﻿using Npgsql;
+﻿using DotNet_Console_Hotel;
 using DotNet_Console_Hotel.Menus;
-using DotNet_Console_Hotel.Services;
+using DotNet_Console_Hotel.Models;
 using DotNet_Console_Hotel.Repositorios;
+using DotNet_Console_Hotel.Services;
 
 var connectionString = "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=nihon";
-var connection = new NpgsqlConnection(connectionString);
-connection.Open();
+
+var hotelRepositorio = new HotelRepositorio(connectionString);
+var quartoRepositorio = new QuartoRepositorio(connectionString);
+var clienteRepositorio = new ClienteRepositorio(connectionString);
+var reservaRepositorio = new ReservaRepositorio(connectionString);
+
+csvReader reader = new(hotelRepositorio, quartoRepositorio);
 
 var sessaoService = new SessaoService();
-var hotelRepositorio = new HotelRepositorio(connection);
-var quartoRepositorio = new QuartoRepositorio(connection);
-var clienteRepositorio = new ClienteRepositorio(connection);
-var reservaRepositorio = new ReservaRepositorio(connection);
-
 var quartoService = new QuartoService(quartoRepositorio);
 var hotelService = new HotelService(hotelRepositorio, quartoService);
 var clienteService = new ClienteService(clienteRepositorio);
@@ -26,7 +27,6 @@ var opcoes = new Dictionary<int, Menu>
 {
     { 1, new MenuCriarReserva(hotelService, reservaService) },
     { 2, new MenuExibirHoteis(hotelService) },
-    { 3, new MenuAdicionarHotel(hotelService) }
     //{ 4, new ExibirReservar() } // Exibe as reservas do usuario atualmente logado
     //{ 5, new CancelarReservar() } // Cencela uma reserva selecionada pelo usuario logado, atualiza os status conforme o cancelamento
     //{ 6, new MenuSair() } // Opcional: Implementar um menu para sair da aplicação
@@ -37,10 +37,9 @@ var menuAutenticacao = new MenuAutenticacao(autenticacaoService, menuPrincipal);
 
 clienteService.NovoCliente("Admin", "000.000.000-00", "admin123");
 
-hotelService.CriarHotel("Parada Legal", "20");
-hotelService.CriarHotel("Canto Divertido", "15");
+reader.HotelReader();
 
-menuAutenticacao.Executar();
+// menuAutenticacao.Executar();
 
 Console.ReadKey();
 

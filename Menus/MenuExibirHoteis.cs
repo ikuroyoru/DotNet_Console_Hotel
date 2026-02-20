@@ -45,11 +45,9 @@ internal class MenuExibirHoteis : Menu
 
         IReadOnlyList<Hotel> Hoteis = _hotelService.ObterHoteis();
 
-        
-
         foreach (Hotel hotel in Hoteis)
         {
-            Console.WriteLine($"Hotel: {hotel.Nome} | Quartos: {hotel.Quartos.Count()}");
+            Console.WriteLine($"Hotel: {hotel.Nome}");
         }
     }
 }

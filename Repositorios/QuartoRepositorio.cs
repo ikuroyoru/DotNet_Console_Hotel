@@ -6,26 +6,35 @@ using DotNet_Console_Hotel.Models;
 
 internal class QuartoRepositorio
 {
-    public QuartoRepositorio(NpgsqlConnection connection)
+    public QuartoRepositorio(string connection)
     {
-        _connection = connection;
+        connectionString = connection;
     }
 
-    NpgsqlConnection _connection; 
-    public List<Quarto> Quartos = new(); // TROCAR PELO BANCO DE DADOS
+    string connectionString;
 
-    public void Adicionar(Quarto quarto)
+    // LOGICA PARA INCLUIR NO BANCO DE DADOS OS QUARTOS GERADOS A PARTIR DO CSV LIDO NA CLASSE csvReader
+    public void AdicionarQuartos(List<Quarto> quartos)
     {
-        Quartos.Add(quarto);
-    }
+        using var connection = new NpgsqlConnection(connectionString);
+        connection.Open();
+        NpgsqlCommand comm = new NpgsqlCommand(
+            "INSERT INTO " +
+            "quarto (numero, categoria, hotel_id, preco) " +
+            "VALUES (@numero, @categoria, @hotel_id, @preco)", connection
+            );
 
-    public IReadOnlyList<Quarto> ObterTodos()
-    {
-        return Quartos.AsReadOnly();
-    }
+        foreach (var quarto in quartos)
+        {
+            comm.Parameters.Clear();
+            comm.Parameters.AddWithValue("numero", quarto.Numero);
+            comm.Parameters.AddWithValue("categoria", quarto.Categoria);
+            comm.Parameters.AddWithValue("hotel_id", quarto.HotelId);
+            comm.Parameters.AddWithValue("preco", quarto.Preco);
+            comm.ExecuteNonQuery();
+        }
 
-    public Quarto? ObterPorNumero(string hotelId, int numero)
-    {
-        return Quartos.Find(q => q.id == numero && q.HotelId == hotelId);
+
+        // LOGICA PARA INCLUIR OS QUARTOS GERADOS NO BANCO DE DADOS
     }
 }

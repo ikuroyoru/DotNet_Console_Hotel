@@ -17,6 +17,7 @@ internal class ReservaService
         _reservaRepositorio = reservaRepositorio;
     }
 
+    /*
     public (string mensagem, bool sucesso) CriarReserva(Hotel hotel, DateTime dataEntrada, DateTime dataSaida)
     {
         var usuarioLogado = _sessaoService.ObterUsuarioLogado();
@@ -42,7 +43,7 @@ internal class ReservaService
                     dataSaida > reserva.DataEntrada
                 )
             );
-
+       
         if (quartoDisponivel == null)
             return ($"Nenhum quarto disponivel para o periodo {dataEntrada:yyyy-MM-dd} a {dataSaida:yyyy-MM-dd}. Por favor, selecione outra data.", false);
 
@@ -53,4 +54,5 @@ internal class ReservaService
 
         return ($"O quarto {quartoDisponivel.id} foi reservado com sucesso para {dataEntrada:yyyy-MM-dd} a {dataSaida:yyyy-MM-dd}.", true);
     }
+    */
 }

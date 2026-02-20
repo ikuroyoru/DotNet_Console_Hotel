@@ -1,51 +1,61 @@
-﻿namespace DotNet_Console_Hotel.Models;
+﻿using System;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
-/// <summary>
-/// Representa um hotel contendo um conjunto de quartos.
-/// </summary>
-/// <remarks>
-/// Ao ser criado, o hotel armazena informações básicas, como nome,
-/// e mantém uma lista de quartos associados.
-///
-/// Regras de negócio aplicadas:
-/// - O hotel deve possuir pelo menos um quarto.
-/// - A lista de quartos é gerenciada internamente.
-/// - A numeração e categorias dos quartos (Standard/Premium) podem ser definidas
-///   externamente ou via serviço responsável por criar quartos.
-/// </remarks>
+namespace DotNet_Console_Hotel.Models;
+
 internal class Hotel
 {
-    /// <summary>
-    /// Inicializa uma nova instância de <see cref="Hotel"/>.
-    /// </summary>
-    /// <param name="nome">Nome do hotel.</param>
-    /// <param name="quartos">Lista de quartos a ser associada ao hotel.</param>
-    /// <exception cref="ArgumentException">
-    /// Lançada quando a lista de quartos é nula ou vazia.
-    /// </exception>
-    public Hotel(string nome, List<Quarto> quartos)
+    public Hotel(string nome, string rua, int numero, string cidade, string estado, string pais, string cep, string telefone, int quantidadeQuartos)
     {
-        Nome = nome;
-        foreach (var quarto in quartos)
-        {
-            _quartos.Add(quarto);
-        }
+        this.Nome = nome;
+        this.Rua = rua;
+        this.Numero = numero;
+        this.Cidade = cidade;
+        this.Estado = estado;
+        this.Cep = cep;
+        this.Pais = pais;
+        this.Telefone = telefone;
+        this.QuantidadeQuartos = quantidadeQuartos;
     }
 
-    /// <summary>
-    /// Nome do hotel.
-    /// </summary>
+    public Guid Id { get; set; }
     public string Nome { get; private set; }
+    public string Rua { get; private set; }
+    public int Numero { get; private set; }
+    public string Cidade { get; }
+    public string Estado { get; }
+    public string Cep { get; private set; }
+    public string Pais { get; }
+    public string Telefone { get; private set; }
+    public int QuantidadeQuartos { get; private set; }
+    public bool Ativo { get; private set; }
 
-    private readonly List<Quarto> _quartos = new();
+    public List<Quarto> GerarQuartos(int qtdSingle, int qtdDouble, int qtdTriple, int qtdSuite, decimal precoSingle, decimal precoDouble, decimal precoTriple, decimal precoSuite)
+    {
+        string[] categorias = { "Single", "Double", "Triple", "Suite" };
 
-    /// <summary>
-    /// Lista somente leitura contendo todos os quartos do hotel.
-    /// </summary>
-    /// <remarks>
-    /// A lista é protegida contra modificações externas.
-    /// Para adicionar ou alterar quartos, utilize os serviços correspondentes.
-    /// </remarks>
-    public IReadOnlyList<Quarto> Quartos => _quartos;
+        List<Quarto> quartos = new List<Quarto>();
+        int numero = 1;
 
+        for (int i = 0; i < qtdSingle; i++)
+            quartos.Add(new Quarto(numero++, precoSingle, "Single", Id));
+
+        for (int i = 0; i < qtdDouble; i++)
+            quartos.Add(new Quarto(numero++, precoDouble, "Double", Id));
+
+        for (int i = 0; i < qtdTriple; i++)
+            quartos.Add(new Quarto(numero++, precoTriple, "Triple", Id));
+
+        for (int i = 0; i < qtdSuite; i++)
+            quartos.Add(new Quarto(numero++, precoSuite, "Suite", Id));
+
+        foreach (var quarto in quartos)
+            Console.WriteLine($"Quarto {quarto.Numero} - Hotel: {Id}");
+
+        return quartos;
+    }
+    public void DesativarHotel()
+    {
+        Ativo = false;
+    }
 }

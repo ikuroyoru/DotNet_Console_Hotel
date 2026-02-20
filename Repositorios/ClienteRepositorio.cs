@@ -4,13 +4,13 @@ using Npgsql;
 using DotNet_Console_Hotel.Models;
 
 internal class ClienteRepositorio
-{   
-    public ClienteRepositorio(NpgsqlConnection connection)
+{
+    public ClienteRepositorio(string connection)
     {
-        _connection = connection;
+        connectionString = connection;
     }
 
-    NpgsqlConnection _connection;
+    string connectionString;
     private readonly List<Cliente> Clientes = new(); // TROCAR PELO BANCO DE DADOS
 
 

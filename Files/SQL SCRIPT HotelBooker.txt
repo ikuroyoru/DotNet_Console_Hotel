@@ -1,0 +1,48 @@
+DROP TABLE IF EXISTS hotel, quarto, usuario;
+
+CREATE TABLE hotel (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome VARCHAR(255) NOT NULL,
+    rua VARCHAR(255) NOT NULL,
+	numero INT NOT NULL,
+	cidade VARCHAR(255) NOT NULL,
+	estado VARCHAR(100) NOT NULL,
+	pais VARCHAR(100) NOT NULL,
+	cep VARCHAR(9),
+	telefone VARCHAR(20),
+	quantidade_quartos INT NOT NULL,
+	ativo BOOL DEFAULT TRUE
+);
+
+CREATE TABLE quarto (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	numero INT NOT NULL,
+	hotel_id UUID NOT NULL REFERENCES hotel(id) ON DELETE CASCADE,
+	categoria VARCHAR(100) NOT NULL,
+	preco NUMERIC(10,2) NOT NULL
+);
+
+CREATE TABLE usuario (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	nome VARCHAR(255) NOT NULL,
+	cpf CHAR(14) NOT NULL UNIQUE,
+	email VARCHAR(255) NOT NULL UNIQUE,
+	senha_hash VARCHAR(255) NOT NULL,
+	status VARCHAR(50),
+	ultimo_login TIMESTAMP,
+	criado_em TIMESTAMP NOT NULL,
+	telefone VARCHAR(20),
+	telefone_alternativo VARCHAR(20),
+	rua VARCHAR(255) NOT NULL,
+	numero_casa INT NOT NULL,
+	cidade VARCHAR(255) NOT NULL,
+	estado VARCHAR(100) NOT NULL,
+	pais VARCHAR(100) NOT NULL,
+	cep VARCHAR(9)
+);
+
+ALTER TABLE hotel
+ADD CONSTRAINT unique_hotel_local
+UNIQUE (nome, rua, numero, cep);
+
+
