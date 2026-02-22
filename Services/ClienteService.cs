@@ -25,17 +25,4 @@ internal class ClienteService
     {
         _clienteRepositorio = clienteRepositorio;
     }
-
-    // Adiciona cliente ao sistema
-    public void NovoCliente(string nome, string cpf, string senha)
-    {
-        var cliente = new Cliente(nome, cpf, senha);
-        _clienteRepositorio.Adicionar(cliente);
-    }
-
-    // Busca cliente pelo id/cpf
-    public Cliente? BuscarCliente(string cpf)
-    {
-        return _clienteRepositorio.BuscarPorCpf(cpf);
-    }
 }

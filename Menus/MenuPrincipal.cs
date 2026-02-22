@@ -45,5 +45,6 @@ internal class MenuPrincipal : Menu
         Console.WriteLine("OPCOES INICIAIS");
         Console.WriteLine("1 - Fazer uma reserva");
         Console.WriteLine("2 - Exibir Hoteis");
+        Console.WriteLine("3 - Exibir Minhas Informacoes");
     }
 }

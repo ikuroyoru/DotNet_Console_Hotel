@@ -33,8 +33,5 @@ internal class QuartoRepositorio
             comm.Parameters.AddWithValue("preco", quarto.Preco);
             comm.ExecuteNonQuery();
         }
-
-
-        // LOGICA PARA INCLUIR OS QUARTOS GERADOS NO BANCO DE DADOS
     }
 }

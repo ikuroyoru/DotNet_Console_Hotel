@@ -43,7 +43,7 @@ internal class MenuAutenticacao : Menu
         {
             ExibirOpcoesAutenticacao();
             int escolha = ValidaEscolha();
-            ProcessarOpcaoDeLogin(escolha);
+            ProcessarOpcaoDeAutenticacao(escolha);
             Console.WriteLine("OPERACAO FINALIZADA");
         }
     }
@@ -85,7 +85,7 @@ internal class MenuAutenticacao : Menu
         }
         return escolha;
     }
-    private void ProcessarOpcaoDeLogin(int escolha)
+    private void ProcessarOpcaoDeAutenticacao(int escolha)
     {
         switch (escolha)
         {
@@ -104,63 +104,83 @@ internal class MenuAutenticacao : Menu
     {
         Console.WriteLine("**** Criar uma conta ****");
 
-        Console.Write("\nNome Completo: ");
-        string nomeCompleto = Console.ReadLine()!;
+        string[] campos = {"Nome Completo", "E-Mail", "Senha", "Confirma Senha" };
+        string nome = string.Empty;
+        string email = string.Empty;
+        string senha = string.Empty;
 
-        Console.Write("\nCPF: ");
-        string cpf = Console.ReadLine()!;
+        int i = 0;
 
-        Console.Write("\nSenha: ");
-        string senha = Console.ReadLine()!;
-
-        Console.Write("\nConfirmar Senha: ");
-        string confirmarSenha = Console.ReadLine()!;
-
-        if (senha != confirmarSenha)
+        while (i < campos.Length) // VALIDA CAMPOS ANTES DE CADASTRAR
         {
-            Console.WriteLine("\nAs senhas estao diferentes, tente novamente");
-            Console.WriteLine("\nPressione Qualquer tecla para voltar ao Inicio");
-            Console.ReadKey();
-            ExibirOpcoesAutenticacao();
+            Console.Write($"{campos[i]}: ");
+            string input = Console.ReadLine()!;
+
+            Result resultado = i switch
+            {
+                0 => AutenticacaoService.ValidaNome(input),
+                1 => AutenticacaoService.ValidaFormatoEmail(input),
+                2 => AutenticacaoService.ValidaSenha(input),
+                3 => AutenticacaoService.ValidaConfirmaSenha(senha, input),
+                _ => Result.Fail("Campo inválido")
+            };
+
+            if (resultado.Success)
+            {
+                switch (i)
+                {
+                    case 0: nome = input; break;
+                    case 1: email = input; break;
+                    case 2: senha = input; break;
+                }
+
+                i++;
+                Console.Clear();
+            }
+            else
+            {
+                Console.WriteLine(resultado.Error);
+                Console.WriteLine("Tente novamente.\n");
+            }
         }
 
-        var resultado = _autenticacaoService.Cadastrar(nomeCompleto, cpf, senha);
-        Console.WriteLine(resultado.mensagem);
-
-        if (!resultado.sucesso)
+        var result = _autenticacaoService.Cadastrar(nome, email, senha);
+        if (!result.Success)
         {
-            Console.WriteLine("\nRetornando ao Inicio...");
-            Thread.Sleep(3000);
+            Console.WriteLine(result.Error);
+            Thread.Sleep(4000);
             Executar();
-            return;
+        }
+        else
+        {
+            _autenticacaoService.Login(email, senha);
+            _menuPrincipal.Executar();
         }
 
-        Thread.Sleep(3000);
-        _menuPrincipal.Executar();
     }
     private void FormularioDeLogin()
     {
         Console.WriteLine("***** LOGIN *****");
 
-        Console.Write("\nCPF: ");
-        string cpf = Console.ReadLine()!;
+        Console.Write("\nE-Mail: ");
+        string email = Console.ReadLine()!;
 
         Console.Write("Senha: ");
         string senha = Console.ReadLine()!;
 
-        var resultado = _autenticacaoService.Login(cpf, senha);
+        var resultado = _autenticacaoService.Login(email, senha);
 
-        if (!resultado.sucesso)
+        if (!resultado.Success)
         {
-            Console.WriteLine(resultado.mensagem);
+            Console.WriteLine(resultado.Error);
             Console.WriteLine("\nPressione qualquer tecla para voltar ao Inicio");
             Console.ReadKey();
             Executar();
             return;
         }
 
-        Console.WriteLine(resultado.mensagem);
-        Thread.Sleep(2000);
+        Console.WriteLine("Login efetuado com sucesso!");
+        Thread.Sleep(3000);
         _menuPrincipal.Executar();
     }
 }

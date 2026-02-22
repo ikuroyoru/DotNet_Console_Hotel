@@ -4,48 +4,111 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace DotNet_Console_Hotel.Services;
 
 internal class AutenticacaoService
 {
-    private readonly ClienteService _clienteService;
     private readonly SessaoService _sessaoService;
+    private readonly ClienteRepositorio _clienteRepositorio;
 
-    public AutenticacaoService(SessaoService sessaoService, ClienteService clienteService)
+    public AutenticacaoService(SessaoService sessaoService, ClienteRepositorio clienteRepositorio)
     {
-        _clienteService = clienteService;
         _sessaoService = sessaoService;
+        _clienteRepositorio = clienteRepositorio;
     }
 
-    public (bool sucesso, string mensagem) Cadastrar(string nome, string cpf, string senha)
+    public Result Cadastrar(string nome, string email, string senha)
     {
-        string CpfNormalizado = NormalizarCpf(cpf);
-        var validacaoCpf = ValidaCpf(CpfNormalizado);
+        if (_clienteRepositorio.VerificaClienteComEmail(email))
+            return Result.Fail($"Erro: O E-Mail {email} inserido ja esta cadastrado.");
 
-        if (!validacaoCpf.valido)
-            return (false, "Houve um erro ao criar a conta: CPF invalido");
-
-        var CpfPadronizado = PadronizarCpf(CpfNormalizado);
-
-        _clienteService.NovoCliente(nome, CpfPadronizado, senha);
-
-        var resultado = Login(cpf, senha);
-        return (resultado.sucesso, "Conta criada com sucesso! Seja Bem-vindo(a) " + nome);
+        _clienteRepositorio.NovoCliente(nome, email, senha);
+        return Result.Ok();
     }
 
-    public (bool sucesso, string mensagem) Login(string cpf, string senha)
+    public Result Login(string email, string senha)
     {
-        var validacaoCpf = ValidaCpf(cpf);
-        var cliente = _clienteService.BuscarCliente(validacaoCpf.cpfPadronizado);
+        var cliente = _clienteRepositorio.BuscarClienteAutenticacao(email, senha);
 
-        if ((cliente == null) || (senha != cliente.Senha))
-            return (false, "O CPF ou senha estao incorretos. Tente novamente.");
+        if (cliente == null)
+            return Result.Fail("\"Erro: O E-Mail ou senha estao incorretos. Tente novamente.\"");
 
-        _sessaoService.IniciarSessao(cliente.Cpf);
-        return (true, "Seja Bem-Vindo(a) " + cliente.Nome);
+        var resultado = _sessaoService.IniciarSessao(cliente.Id);
+
+        if (!resultado.Success)
+        {
+            return Result.Fail("Erro: Nao foi possivel iniciar a sessao. Tente novamente.");
+        }
+        return Result.Ok();
     }
 
+    public static Result ValidaFormatoEmail(string email)
+    {
+        // FUNCAO DEVE VERIFICAR SE
+        // - SE O FORMATO GENERICO DO EMAIL ESTA CORRETO
+
+        if (string.IsNullOrWhiteSpace(email))
+            return Result.Fail("O email nao pode ser vazio ou conter apenas espacos em branco");
+
+        if(!Regex.IsMatch(
+            email,
+            @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        ))
+            return Result.Fail("O email inserido nao possui formato valido");
+        
+        return Result.Ok();
+    }
+    public static Result ValidaSenha(string senha)
+    {
+        // A FUNCAO VERIFICA SE
+        // - A SENHA POSSUI UM MINIMO DE 8 CARACTERES
+        // - A SENHA NAO E VAZIA
+
+        if (string.IsNullOrWhiteSpace(senha))
+            return Result.Fail("A senha nao pode ser vazia ou conter apenas espacos em branco");
+
+        if (senha.Length < 8)
+            return Result.Fail("A senha deve possuir 8 caracteres");
+
+        return Result.Ok();
+    }
+    public static Result ValidaNome(string nome)
+    {
+        // A FUNCAO VERIFICA SE
+        // - O NOME NAO E VAZIO
+        // - UM NOME TEM PELO MENOS 4 CARACTERES
+        // - UM NOME TEM NO MAXIMO 50 CARACTERES
+
+        if(string.IsNullOrWhiteSpace(nome))
+            return Result.Fail("O nome nao pode ser vazio ou conter apenas espacos em branco");
+        if (nome.Length < 4)
+           return Result.Fail("O nome deve possuir no minimo 4 caracteres");
+        if(nome.Length > 50)
+            return Result.Fail("O nome deve possuir no maximo 50 caracteres");
+
+        return Result.Ok();
+    }
+    public static Result ValidaConfirmaSenha(string senha, string confirmaSenha)
+    {
+        // A FUNCAO VERIFICA SE
+        // - A CONFIRMACAO DA SENHA EH IGUAL A SENHA INSERIDA
+
+        if (senha != confirmaSenha)
+            return Result.Fail("As senhas estao distintas, tente novamente");
+
+        return Result.Ok();
+    }
+    private bool EmailExiste(string email)
+    {
+        // FUNCAO DEVE VERIFICAR SE
+        // - EMAIL INSERIDO EXISTE ( Enviando email de confirmacao para o email inserido )
+
+        return false;
+    }
+
+    /*
     private (bool valido, string cpfPadronizado) ValidaCpf(string cpf)
     {
         var cpfNormalizado = NormalizarCpf(cpf);
@@ -70,4 +133,5 @@ internal class AutenticacaoService
     {
         return new string(cpf.Where(char.IsDigit).ToArray());
     }
+    */
 }

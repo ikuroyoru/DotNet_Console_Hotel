@@ -2,17 +2,16 @@ namespace DotNet_Console_Hotel.Models;
 
 internal class Cliente
 {
-    public Cliente(string nome, string cpf, string senha)
+    public Cliente(Guid? id, string nome, string email)
     {
         Nome = nome;
-        Cpf = cpf; // CPF NAO PODE SER ID, IMPLEMENTAR UM ID ALEATORIO PARA O CLIENTE, POREM MANTER O CPF COMO UM CAMPO DE IDENTIFICACAO UNICO PARA BUSCA
-        Senha = senha;
+        Email = email;
+        Id = id;
     }
 
+    public Guid? Id { get; set; }
     public string Nome { get; }
+    public string Email { get; }
 
-    public string Cpf { get; }
-
-    public string Senha { get; private set; }
-
+    // FALTA CARREGAR INFORMACOES ADICIONAIS DO CLIENTE (CPF, TELEFONE, ENDERECO, ETC) PARA O MOMENTO DE REALIZAR UMA RESERVA DE HOTEL
 }
