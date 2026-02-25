@@ -3,15 +3,15 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace DotNet_Console_Hotel.Menus;
 
-internal class MenuPrincipal : Menu
+internal class MenuMain : Menu
 {
-    public MenuPrincipal(Dictionary<int, Menu> opcoes)
+    public MenuMain(Dictionary<int, Menu> opcoes)
     {
         Opcoes = opcoes;
     }
     private readonly Dictionary<int, Menu> Opcoes = new();
 
-    public override void Executar()
+    public override void Execute()
     {
         while (true)
         {
@@ -22,7 +22,7 @@ internal class MenuPrincipal : Menu
 
             if (Opcoes.ContainsKey(escolha))
             {
-                Opcoes[escolha].Executar();
+                Opcoes[escolha].Execute();
             }
             else
             {

@@ -1,21 +1,18 @@
-﻿namespace DotNet_Console_Hotel.Repositorios;
+﻿namespace DotNet_Console_Hotel.Infrastructure.Repositories;
 
 using DotNet_Console_Hotel.Models;
-using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using System.Collections.Generic;
-using System.Security.Cryptography;
 
-internal class ClienteRepositorio // Qualquer operacao que tenha relacao direta com o banco de dados e a entidade Cliente e feita aqui.
+internal class RepositoryClient // Qualquer operacao que tenha relacao direta com o banco de dados e a entidade Cliente e feita aqui.
 {   
-    public ClienteRepositorio(string connection)
+    public RepositoryClient(string connection)
     {
         connectionString = connection;
     }
 
     private string connectionString;
 
-    public bool VerificaClienteComEmail(string email)
+    public bool VerifyClientWithEmail(string email)
     {
         using var connection = new NpgsqlConnection(connectionString);
         connection.Open();
@@ -35,20 +32,20 @@ internal class ClienteRepositorio // Qualquer operacao que tenha relacao direta 
         }
     }
 
-    public void NovoCliente(string nome, string email, string senha) 
+    public void NewClient(string name, string email, string password) 
     {
         using var connection = new NpgsqlConnection(connectionString);
         connection.Open();
 
         NpgsqlCommand command = new NpgsqlCommand("INSERT INTO cliente (nome, email, senha_hash) VALUES (@nome, @email, @senha)", connection);
 
-        command.Parameters.AddWithValue("@nome", nome);
+        command.Parameters.AddWithValue("@nome", name);
         command.Parameters.AddWithValue("@email", email);
-        command.Parameters.AddWithValue("@senha", senha);
+        command.Parameters.AddWithValue("@senha", password);
         command.ExecuteNonQuery();
     }
 
-    public Cliente? BuscarClienteAutenticacao(string email, string senha)
+    public Client? GetClientByAuthentication(string email, string senha)
     {
         using var connection = new NpgsqlConnection(connectionString);
         connection.Open();
@@ -64,13 +61,13 @@ internal class ClienteRepositorio // Qualquer operacao que tenha relacao direta 
             Guid? clienteId = reader.GetGuid(0);
             string nome = reader.GetString(1);
             string emailCliente = reader.GetString(2);
-            return new Cliente(clienteId, nome, emailCliente);
+            return new Client(clienteId, nome, emailCliente);
         }
         else
            return null;
     }
 
-    public Cliente? BuscarClientePorId(Guid? id)
+    public Client? GetClientById(Guid? id)
     {
         using var connection = new NpgsqlConnection(connectionString);
         connection.Open();
@@ -81,10 +78,10 @@ internal class ClienteRepositorio // Qualquer operacao que tenha relacao direta 
         var reader = command.ExecuteReader();
         if (reader.Read())
         {
-            Guid? clienteId = reader.GetGuid(0);
-            string nome = reader.GetString(1);
-            string emailCliente = reader.GetString(2);
-            return new Cliente(clienteId, nome, emailCliente);
+            Guid? clientId = reader.GetGuid(0);
+            string name = reader.GetString(1);
+            string clientEmail = reader.GetString(2);
+            return new Client(clientId, name, clientEmail);
         }
         else
            return null;

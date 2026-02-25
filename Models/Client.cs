@@ -1,16 +1,16 @@
 namespace DotNet_Console_Hotel.Models;
 
-internal class Cliente
+internal class Client
 {
-    public Cliente(Guid? id, string nome, string email)
+    public Client(Guid? id, string name, string email)
     {
-        Nome = nome;
+        Name = name;
         Email = email;
         Id = id;
     }
 
     public Guid? Id { get; set; }
-    public string Nome { get; }
+    public string Name { get; }
     public string Email { get; }
 
     // FALTA CARREGAR INFORMACOES ADICIONAIS DO CLIENTE (CPF, TELEFONE, ENDERECO, ETC) PARA O MOMENTO DE REALIZAR UMA RESERVA DE HOTEL

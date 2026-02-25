@@ -1,20 +1,20 @@
-﻿using DotNet_Console_Hotel.Models;
-using DotNet_Console_Hotel.Repositorios;
+﻿using DotNet_Console_Hotel.Infrastructure.Repositories;
+using DotNet_Console_Hotel.Models;
 using System.Linq;
 
 namespace DotNet_Console_Hotel.Services;
 
-internal class ReservaService
+internal class ServiceReservation
 {
-    private readonly QuartoService _quartoService; // SUBSTITUIR POR QUARTO REPOSITORIO
-    private readonly SessaoService _sessaoService;
-    private readonly ReservaRepositorio _reservaRepositorio;
+    private readonly ServiceRoom _quartoService; // Change by RepositoryRoom
+    private readonly ServiceSession _serviceSession;
+    private readonly RepositoryReservation _repositoryReservation;
 
-    public ReservaService(SessaoService sessaoService, QuartoService quartoService, ReservaRepositorio reservaRepositorio)
+    public ServiceReservation(ServiceSession serviceSession, ServiceRoom serviceRoom, RepositoryReservation repositoryReservation)
     {
-        _quartoService = quartoService;
-        _sessaoService = sessaoService;
-        _reservaRepositorio = reservaRepositorio;
+        _quartoService = serviceRoom;
+        _serviceSession = serviceSession;
+        _repositoryReservation = repositoryReservation;
     }
 
     /*

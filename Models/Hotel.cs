@@ -1,61 +1,55 @@
-﻿using System;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace DotNet_Console_Hotel.Models;
+﻿namespace DotNet_Console_Hotel.Models;
 
 internal class Hotel
 {
-    public Hotel(string nome, string rua, int numero, string cidade, string estado, string pais, string cep, string telefone, int quantidadeQuartos)
+    public Hotel(string name, string street, int number, string city, string state, string country, string zipcode, string telephone, int roomCount)
     {
-        this.Nome = nome;
-        this.Rua = rua;
-        this.Numero = numero;
-        this.Cidade = cidade;
-        this.Estado = estado;
-        this.Cep = cep;
-        this.Pais = pais;
-        this.Telefone = telefone;
-        this.QuantidadeQuartos = quantidadeQuartos;
+        this.Name = name;
+        this.Street = street;
+        this.Number = number;
+        this.City = city;
+        this.State = state;
+        this.Zipcode = zipcode;
+        this.Country = country;
+        this.Telephone = telephone;
+        this.RoomCount = roomCount;
     }
 
     public Guid Id { get; set; }
-    public string Nome { get; private set; }
-    public string Rua { get; private set; }
-    public int Numero { get; private set; }
-    public string Cidade { get; }
-    public string Estado { get; }
-    public string Cep { get; private set; }
-    public string Pais { get; }
-    public string Telefone { get; private set; }
-    public int QuantidadeQuartos { get; private set; }
-    public bool Ativo { get; private set; }
+    public string Name { get; private set; }
+    public string Street { get; private set; }
+    public int Number { get; private set; }
+    public string City { get; }
+    public string State { get; }
+    public string Zipcode { get; private set; }
+    public string Country { get; }
+    public string Telephone { get; private set; }
+    public int RoomCount { get; private set; }
+    public bool Active { get; private set; }
 
-    public List<Quarto> GerarQuartos(int qtdSingle, int qtdDouble, int qtdTriple, int qtdSuite, decimal precoSingle, decimal precoDouble, decimal precoTriple, decimal precoSuite)
+    public List<Room> GenerateRooms(int singleCount, int doubleCount, int tripleCount, int suiteCount, decimal singlePrice, decimal doublePrice, decimal triplePrice, decimal suitePrice)
     {
         string[] categorias = { "Single", "Double", "Triple", "Suite" };
 
-        List<Quarto> quartos = new List<Quarto>();
-        int numero = 1;
+        List<Room> rooms = new List<Room>();
+        int number = 1;
 
-        for (int i = 0; i < qtdSingle; i++)
-            quartos.Add(new Quarto(numero++, precoSingle, "Single", Id));
+        for (int i = 0; i < singleCount; i++)
+            rooms.Add(new Room(number++, singlePrice, "Single", Id));
 
-        for (int i = 0; i < qtdDouble; i++)
-            quartos.Add(new Quarto(numero++, precoDouble, "Double", Id));
+        for (int i = 0; i < doubleCount; i++)
+            rooms.Add(new Room(number++, doublePrice, "Double", Id));
 
-        for (int i = 0; i < qtdTriple; i++)
-            quartos.Add(new Quarto(numero++, precoTriple, "Triple", Id));
+        for (int i = 0; i < tripleCount; i++)
+            rooms.Add(new Room(number++, triplePrice, "Triple", Id));
 
-        for (int i = 0; i < qtdSuite; i++)
-            quartos.Add(new Quarto(numero++, precoSuite, "Suite", Id));
+        for (int i = 0; i < suiteCount; i++)
+            rooms.Add(new Room(number++, suitePrice, "Suite", Id));
 
-        foreach (var quarto in quartos)
-            Console.WriteLine($"Quarto {quarto.Numero} - Hotel: {Id}");
+        foreach (var room in rooms)
+            Console.WriteLine($"Quarto {room.Number} - Hotel: {Id}");
 
-        return quartos;
+        return rooms;
     }
-    public void DesativarHotel()
-    {
-        Ativo = false;
-    }
+
 }

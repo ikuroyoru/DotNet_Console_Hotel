@@ -1,47 +1,44 @@
-﻿using DotNet_Console_Hotel;
-using DotNet_Console_Hotel.Menus;
-using DotNet_Console_Hotel.Models;
-using DotNet_Console_Hotel.Repositorios;
+﻿using DotNet_Console_Hotel.Menus;
+using DotNet_Console_Hotel.Infrastructure.Repositories;
 using DotNet_Console_Hotel.Services;
-// using Microsoft.EntityFrameworkCore; // AINDA PRECISO ESTUDAR COMO FUNCIONA
-using System;
+using DotNet_Console_Hotel.Infrastructure.FileReaders;
 
 var connectionString = "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=nihon";
 
-var hotelRepositorio = new HotelRepositorio(connectionString);
-var quartoRepositorio = new QuartoRepositorio(connectionString);
-var clienteRepositorio = new ClienteRepositorio(connectionString);
-var reservaRepositorio = new ReservaRepositorio(connectionString);
+var repositoryHotel = new RepositoryHotel(connectionString);
+var repositoryRoom = new RepositoryRoom(connectionString);
+var repositoryClient = new RepositoryClient(connectionString);
+var repositoryReservation = new RepositoryReservation(connectionString);
 
-csvReader reader = new(hotelRepositorio, quartoRepositorio);
+CsvHotelImporter hotelReader = new(repositoryHotel, repositoryRoom);
 
-var sessaoService = new SessaoService();
-var quartoService = new QuartoService(quartoRepositorio);
-var hotelService = new HotelService(hotelRepositorio, quartoService);
-var clienteService = new ClienteService(clienteRepositorio);
-var reservaService = new ReservaService(sessaoService, quartoService, reservaRepositorio);
-var autenticacaoService = new AutenticacaoService(sessaoService, clienteRepositorio);
+var serviceSession = new ServiceSession();
+var serviceRoom = new ServiceRoom(repositoryRoom);
+var serviceHotel = new ServiceHotel(repositoryHotel, serviceRoom);
+var serviceClient = new ServiceClient(repositoryClient);
+var serviceReservation = new ServiceReservation(serviceSession, serviceRoom, repositoryReservation);
+var serviceAuthentication = new ServiceAuthentication(serviceSession, repositoryClient);
 
 var menu = new Menu();
 
 
-var opcoes = new Dictionary<int, Menu>
+var options = new Dictionary<int, Menu>
 {
-    { 1, new MenuCriarReserva(hotelService, reservaService) },
-    { 2, new MenuExibirHoteis(hotelService) },
-    { 3, new MenuExibirDetalhesPessoais(clienteRepositorio, sessaoService)  } // Exibe as reservas do usuario atualmente logado
-    //{ 4, new ExibirReservar() } // Exibe as reservas do usuario atualmente logado
-    //{ 5, new CancelarReservar() } // Cencela uma reserva selecionada pelo usuario logado, atualiza os status conforme o cancelamento
-    //{ 6, new MenuSair() } // Opcional: Implementar um menu para sair da aplicação
+    { 1, new MenuCreateReservation(serviceHotel, serviceReservation) },
+    { 2, new MenuShowHotels(serviceHotel) },
+    { 3, new MenuShowPersonalInformation(repositoryClient, serviceSession)  }
+    //{ 4, new MenuCreateReservation() } 
+    //{ 5, new MenuCancelReservation() } 
+    //{ 6, new MenuQuit() }
 };
 
-var menuPrincipal = new MenuPrincipal(opcoes);
-var menuAutenticacao = new MenuAutenticacao(autenticacaoService, menuPrincipal);
+var menuMain = new MenuMain(options);
+var menuAUthentication = new MenuAuthentication(serviceAuthentication, menuMain);
 
 
-// reader.HotelReader(); // FAZ LEITURA DE HOTEIS DO CSV E ENVIA PARA O BANCO DE DADOS
+// reader.HotelReader();
 
-menuAutenticacao.Executar();
+menuAUthentication.Execute();
 
 Console.ReadKey();
 

@@ -1,80 +1,75 @@
-﻿using DotNet_Console_Hotel.Models;
-using DotNet_Console_Hotel.Repositorios;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
+using DotNet_Console_Hotel.Core.Common;
+using DotNet_Console_Hotel.Infrastructure.Repositories;
 
 namespace DotNet_Console_Hotel.Services;
 
-internal class AutenticacaoService
+internal class ServiceAuthentication
 {
-    private readonly SessaoService _sessaoService;
-    private readonly ClienteRepositorio _clienteRepositorio;
+    private readonly ServiceSession _serviceSession;
+    private readonly RepositoryClient _repositoryClient;
 
-    public AutenticacaoService(SessaoService sessaoService, ClienteRepositorio clienteRepositorio)
+    public ServiceAuthentication(ServiceSession serviceSession, RepositoryClient repositoryClient)
     {
-        _sessaoService = sessaoService;
-        _clienteRepositorio = clienteRepositorio;
+        _serviceSession = serviceSession;
+        _repositoryClient = repositoryClient;
     }
 
-    public Result Cadastrar(string nome, string email, string senha)
+    public Result Register(string name, string email, string password)
     {
-        if (_clienteRepositorio.VerificaClienteComEmail(email))
-            return Result.Fail($"Erro: O E-Mail {email} inserido ja esta cadastrado.");
+        if (_repositoryClient.VerifyClientWithEmail(email))
+            return Result.Fail($"Error: This email is already used.");
 
-        _clienteRepositorio.NovoCliente(nome, email, senha);
+        _repositoryClient.NewClient(name, email, password);
         return Result.Ok();
     }
 
-    public Result Login(string email, string senha)
+    public Result Login(string email, string password)
     {
-        var cliente = _clienteRepositorio.BuscarClienteAutenticacao(email, senha);
+        var client = _repositoryClient.GetClientByAuthentication(email, password);
 
-        if (cliente == null)
-            return Result.Fail("\"Erro: O E-Mail ou senha estao incorretos. Tente novamente.\"");
+        if (client == null)
+            return Result.Fail("\"Error: E-Mail or password may be incorrect\"");
 
-        var resultado = _sessaoService.IniciarSessao(cliente.Id);
+        var result = _serviceSession.SessionStart(client.Id);
 
-        if (!resultado.Success)
+        if (!result.Success)
         {
-            return Result.Fail("Erro: Nao foi possivel iniciar a sessao. Tente novamente.");
+            return result;
         }
         return Result.Ok();
     }
 
-    public static Result ValidaFormatoEmail(string email)
+    public static Result ValidateEmailFormat(string email)
     {
-        // FUNCAO DEVE VERIFICAR SE
-        // - SE O FORMATO GENERICO DO EMAIL ESTA CORRETO
+        // - E-Mail is not empty or whitespace
+        // - E-Mail has a valid format (using regular expression)
 
         if (string.IsNullOrWhiteSpace(email))
-            return Result.Fail("O email nao pode ser vazio ou conter apenas espacos em branco");
+            return Result.Fail("The E-Mail cannot be empty or have empty spaces.");
 
         if(!Regex.IsMatch(
             email,
             @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
         ))
-            return Result.Fail("O email inserido nao possui formato valido");
+            return Result.Fail("Error: Invalid E-Mail format");
         
         return Result.Ok();
     }
-    public static Result ValidaSenha(string senha)
+    public static Result ValidatePassword(string password)
     {
-        // A FUNCAO VERIFICA SE
-        // - A SENHA POSSUI UM MINIMO DE 8 CARACTERES
-        // - A SENHA NAO E VAZIA
+        // - Password has at least 8 characters
+        // - Password is not empty or whitespace
 
-        if (string.IsNullOrWhiteSpace(senha))
-            return Result.Fail("A senha nao pode ser vazia ou conter apenas espacos em branco");
+        if (string.IsNullOrWhiteSpace(password))
+            return Result.Fail("The password cannot be empty or have empty spaces");
 
-        if (senha.Length < 8)
-            return Result.Fail("A senha deve possuir 8 caracteres");
+        if (password.Length < 8)
+            return Result.Fail("The password must have atleast 8 characters");
 
         return Result.Ok();
     }
-    public static Result ValidaNome(string nome)
+    public static Result ValidadeName(string nome)
     {
         // A FUNCAO VERIFICA SE
         // - O NOME NAO E VAZIO
@@ -90,7 +85,7 @@ internal class AutenticacaoService
 
         return Result.Ok();
     }
-    public static Result ValidaConfirmaSenha(string senha, string confirmaSenha)
+    public static Result ValidateConfirmPassword(string senha, string confirmaSenha)
     {
         // A FUNCAO VERIFICA SE
         // - A CONFIRMACAO DA SENHA EH IGUAL A SENHA INSERIDA
