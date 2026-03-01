@@ -3,6 +3,7 @@
 using Npgsql;
 using System;
 using DotNet_Console_Hotel.Models;
+using System.ComponentModel.DataAnnotations;
 
 internal class RepositoryRoom
 {
@@ -13,24 +14,41 @@ internal class RepositoryRoom
 
     string connectionString;
 
-    public void AddRoom(List<Room> rooms)
+    public void AddGeneratedRooms(List<Room> rooms)
     {
-        using var connection = new NpgsqlConnection(connectionString);
-        connection.Open();
-        NpgsqlCommand comm = new NpgsqlCommand(
-            "INSERT INTO " +
-            "quarto (numero, categoria, hotel_id, preco) " +
-            "VALUES (@numero, @categoria, @hotel_id, @preco)", connection
-            );
+        using var context = new HotelBookerContext(connectionString);
 
         foreach (var room in rooms)
         {
-            comm.Parameters.Clear();
-            comm.Parameters.AddWithValue("numero", room.Number);
-            comm.Parameters.AddWithValue("categoria", room.Category);
-            comm.Parameters.AddWithValue("hotel_id", room.HotelId);
-            comm.Parameters.AddWithValue("preco", room.Price);
-            comm.ExecuteNonQuery();
+            context.Rooms.Add(room);
         }
+
+        context.SaveChanges();
+    }
+
+    /// <summary>
+    /// Retrieves the first available room for the specified hotel and date range.
+    /// A room is considered available when it has no existing reservations
+    /// that conflict with the provided check-in and check-out dates.
+    /// </summary>
+    /// <param name="hotelId">The unique identifier of the hotel.</param>
+    /// <param name="checkInDate">The desired check-in date (UTC).</param>
+    /// <param name="checkOutDate">The desired check-out date (UTC).</param>
+    /// <returns>
+    /// The first available <see cref="Room"/> ordered by room number,
+    /// or null if no rooms are available for the selected period.
+    /// </returns>
+    public Room? GetAvailableRoom(Guid hotelId, DateTime checkInDate, DateTime checkOutDate)
+    {
+        using var context = new HotelBookerContext(connectionString);
+
+        return context.Rooms
+            .Where(r => r.Hotel_Id == hotelId)
+            .Where(r => !context.Reservations.Any(res =>
+                res.Room_Id == r.Id &&
+                checkInDate < res.CheckOut_Date &&
+                checkOutDate > res.CheckIn_Date))
+            .OrderBy(r => r.Number) // opcional, mas deixa previsível
+            .FirstOrDefault();
     }
 }

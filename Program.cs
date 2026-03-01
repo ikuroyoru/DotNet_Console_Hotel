@@ -16,7 +16,7 @@ var serviceSession = new ServiceSession();
 var serviceRoom = new ServiceRoom(repositoryRoom);
 var serviceHotel = new ServiceHotel(repositoryHotel, serviceRoom);
 var serviceClient = new ServiceClient(repositoryClient);
-var serviceReservation = new ServiceReservation(serviceSession, serviceRoom, repositoryReservation);
+var serviceReservation = new ServiceReservation(serviceSession, repositoryReservation, repositoryRoom);
 var serviceAuthentication = new ServiceAuthentication(serviceSession, repositoryClient);
 
 var menu = new Menu();
@@ -26,19 +26,19 @@ var options = new Dictionary<int, Menu>
 {
     { 1, new MenuCreateReservation(serviceHotel, serviceReservation) },
     { 2, new MenuShowHotels(serviceHotel) },
-    { 3, new MenuShowPersonalInformation(repositoryClient, serviceSession)  }
-    //{ 4, new MenuCreateReservation() } 
+    { 3, new MenuShowPersonalInformation(repositoryClient, serviceSession)  },
+    { 4, new MenuCreateReservation(serviceHotel, serviceReservation) }, 
     //{ 5, new MenuCancelReservation() } 
     //{ 6, new MenuQuit() }
 };
 
 var menuMain = new MenuMain(options);
-var menuAUthentication = new MenuAuthentication(serviceAuthentication, menuMain);
+var menuAuthentication = new MenuAuthentication(serviceAuthentication, menuMain);
 
 
-// reader.HotelReader();
+hotelReader.HotelReader();
 
-menuAUthentication.Execute();
+menuAuthentication.Execute();
 
 Console.ReadKey();
 

@@ -1,48 +1,71 @@
-DROP TABLE IF EXISTS hotel, quarto, usuario;
+DROP TABLE IF EXISTS hotels, rooms, clients, reservations;
 
-CREATE TABLE hotel (
+CREATE TABLE hotels (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome VARCHAR(255) NOT NULL,
-    rua VARCHAR(255) NOT NULL,
-	numero INT NOT NULL,
-	cidade VARCHAR(255) NOT NULL,
-	estado VARCHAR(100) NOT NULL,
-	pais VARCHAR(100) NOT NULL,
-	cep VARCHAR(9),
-	telefone VARCHAR(20),
-	quantidade_quartos INT NOT NULL,
-	ativo BOOL DEFAULT TRUE
+    name VARCHAR(255) NOT NULL,
+    street VARCHAR(255) NOT NULL,
+    number INT NOT NULL,
+    city VARCHAR(255) NOT NULL,
+    state VARCHAR(100) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    zip_code VARCHAR(9) NOT NULL,
+    phone VARCHAR(20),
+    room_count INT NOT NULL,
+    is_active BOOL DEFAULT TRUE
 );
 
-CREATE TABLE quarto (
+ALTER TABLE hotels
+ADD CONSTRAINT unique_hotel_location
+UNIQUE (name, street, number, zip_code);
+
+CREATE TABLE rooms (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-	numero INT NOT NULL,
-	hotel_id UUID NOT NULL REFERENCES hotel(id) ON DELETE CASCADE,
-	categoria VARCHAR(100) NOT NULL,
-	preco NUMERIC(10,2) NOT NULL
+    number INT NOT NULL,
+    hotel_id UUID NOT NULL REFERENCES hotels(id) ON DELETE CASCADE,
+    category VARCHAR(100) NOT NULL,
+    price NUMERIC(10,2) NOT NULL
 );
 
-CREATE TABLE usuario (
+CREATE TABLE clients (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-	nome VARCHAR(255) NOT NULL,
-	cpf CHAR(14) NOT NULL UNIQUE,
-	email VARCHAR(255) NOT NULL UNIQUE,
-	senha_hash VARCHAR(255) NOT NULL,
-	status VARCHAR(50),
-	ultimo_login TIMESTAMP,
-	criado_em TIMESTAMP NOT NULL,
-	telefone VARCHAR(20),
-	telefone_alternativo VARCHAR(20),
-	rua VARCHAR(255) NOT NULL,
-	numero_casa INT NOT NULL,
-	cidade VARCHAR(255) NOT NULL,
-	estado VARCHAR(100) NOT NULL,
-	pais VARCHAR(100) NOT NULL,
-	cep VARCHAR(9)
+    name VARCHAR(255) NOT NULL,
+    cpf CHAR(14) UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    status VARCHAR(50),
+    last_login DATE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    phone VARCHAR(20),
+    alternative_phone VARCHAR(20),
+    street VARCHAR(255),
+    house_number INT,
+    city VARCHAR(255),
+    state VARCHAR(100),
+    country VARCHAR(100),
+    zip_code VARCHAR(9)
 );
 
-ALTER TABLE hotel
-ADD CONSTRAINT unique_hotel_local
-UNIQUE (nome, rua, numero, cep);
+CREATE TABLE reservations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+	room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+	checkin_date TIMESTAMP WITH TIME ZONE NOT NULL,
+	checkout_date TIMESTAMP WITH TIME ZONE NOT NULL
+);
 
 
+-- Seleção para conferir
+SELECT * FROM clients;
+SELECT * FROM rooms;
+SELECT * FROM hotels;
+SELECT * FROM reservations;
+
+SELECT 
+    r.number AS room_number,
+    c.name AS client_name,
+    res.checkin_date,
+    res.checkout_date
+FROM reservations res
+JOIN rooms r ON res.room_id = r.id
+JOIN clients c ON res.client_id = c.id
+ORDER BY res.checkin_date;

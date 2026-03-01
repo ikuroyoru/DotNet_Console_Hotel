@@ -1,4 +1,5 @@
-﻿using DotNet_Console_Hotel.Infrastructure.Repositories;
+﻿using DotNet_Console_Hotel.Core.Common;
+using DotNet_Console_Hotel.Infrastructure.Repositories;
 using DotNet_Console_Hotel.Models;
 using System.Linq;
 
@@ -6,53 +7,50 @@ namespace DotNet_Console_Hotel.Services;
 
 internal class ServiceReservation
 {
-    private readonly ServiceRoom _quartoService; // Change by RepositoryRoom
     private readonly ServiceSession _serviceSession;
     private readonly RepositoryReservation _repositoryReservation;
+    private readonly RepositoryRoom _repositoryRoom;
 
-    public ServiceReservation(ServiceSession serviceSession, ServiceRoom serviceRoom, RepositoryReservation repositoryReservation)
+    public ServiceReservation(ServiceSession serviceSession, RepositoryReservation repositoryReservation, RepositoryRoom repositoryRoom)
     {
-        _quartoService = serviceRoom;
+        _repositoryRoom = repositoryRoom;
         _serviceSession = serviceSession;
         _repositoryReservation = repositoryReservation;
     }
 
-    /*
-    public (string mensagem, bool sucesso) CriarReserva(Hotel hotel, DateTime dataEntrada, DateTime dataSaida)
+    /// <summary>
+    /// Validates business rules and attempts to create a reservation for the specified hotel.
+    /// The reservation is created only if the user is connected, the dates are valid,
+    /// and at least one room is available without date conflicts.
+    /// </summary>
+    /// <param name="hotel">The hotel where the reservation will be made.</param>
+    /// <param name="checkInDate">The desired check-in date.</param>
+    /// <param name="checkoutDate">The desired check-out date.</param>
+    /// <returns>
+    /// Returns <see cref="Result.Ok"/> if the reservation is successfully created;
+    /// otherwise, returns <see cref="Result.Fail"/> with an error message.
+    /// </returns>
+    public Result CreateReservation(Hotel hotel, DateTime checkInDate, DateTime checkoutDate)
     {
-        var usuarioLogado = _sessaoService.ObterUsuarioLogado();
-        var userId = usuarioLogado.userId;
+        Guid clientId = _serviceSession.GetConnectedUserId();
 
-        if (!usuarioLogado.status)
-            return ("Usuario nao autenticado. Por favor, faça login para reservar um quarto.", false);
+        // Return avaliable room with validated checkIn and checkOut dates
+        Room? room = _repositoryRoom.GetAvailableRoom(hotel.Id, checkInDate, checkoutDate);
 
-        if (dataEntrada == default || dataSaida == default)
-            return ("As datas nao podem ser vazias.", false);
+        if (clientId == Guid.Empty)
+            return Result.Fail("Usuário não conectado.");
 
-        if (dataSaida <= dataEntrada)
-            return ("A data de saida deve ser posterior à data de entrada.", false);
+        if (hotel == null)
+            return Result.Fail("Hotel inválido.");
 
+        if (room == null)
+            return Result.Fail("O hotel não possui quartos disponíveis.");
 
-        // DEVE OBTER OS QUARTOS DE UM HOTEL COM QuartoService
-        // FILTRA OS QUARTOS DO HOTEL PARA ENCONTRAR UM QUE NAO TENHA RESERVAS CONFLITANTES COM AS DATAS DE ENTRADA E SAIDA SELECIONADAS PELO USUÁRIO
-        // FILTRO DEVE OCORRER EM RESERVAREPOSITORIO
-        var quartoDisponivel = hotel.Quartos
-            .FirstOrDefault(quarto =>
-                !quarto.Reservas.Any(reserva =>
-                    dataEntrada < reserva.DataSaida &&
-                    dataSaida > reserva.DataEntrada
-                )
-            );
-       
-        if (quartoDisponivel == null)
-            return ($"Nenhum quarto disponivel para o periodo {dataEntrada:yyyy-MM-dd} a {dataSaida:yyyy-MM-dd}. Por favor, selecione outra data.", false);
+        var reservation = new Reservation(clientId, room.Id, checkInDate, checkoutDate);
 
-        // Cria a reserva com dados verificados e consistentes. Reserva nao e criada se o usuario nao estiver autenticado ou se o cliente nao for encontrado
-        Reserva reserva = new Reserva(dataEntrada, dataSaida, userId, quartoDisponivel.id); // NECESSARIO ASSOCIAR O HOTEL.ID E NAO HOTEL.NOME
+        _repositoryReservation.AddReservation(reservation);
 
-        _reservaRepositorio.AdicionarReserva(reserva);
-
-        return ($"O quarto {quartoDisponivel.id} foi reservado com sucesso para {dataEntrada:yyyy-MM-dd} a {dataSaida:yyyy-MM-dd}.", true);
+        return Result.Ok();
     }
-    */
+
 }

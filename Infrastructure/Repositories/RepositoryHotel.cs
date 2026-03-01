@@ -1,6 +1,6 @@
-﻿using Npgsql;
-using System;
-using DotNet_Console_Hotel.Models;
+﻿using DotNet_Console_Hotel.Models;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace DotNet_Console_Hotel.Infrastructure.Repositories;
 
@@ -15,51 +15,32 @@ internal class RepositoryHotel
 
     public Hotel? AddHotel(Hotel hotel)
     {
-        using var connection = new NpgsqlConnection(connectionString);
-        connection.Open();
+        using var context = new HotelBookerContext(connectionString);
 
-        using var comm = new NpgsqlCommand(
-                @"INSERT INTO hotel 
-                (nome, rua, numero, cidade, estado, cep, pais, telefone, quantidade_quartos, ativo)
-                VALUES 
-                (@nome, @rua, @numero, @cidade, @estado, @cep, @pais, @telefone, @quantidade_quartos, @ativo)
-                ON CONFLICT (nome, rua, numero, cep)
-                DO NOTHING
-                RETURNING id;",
-                connection);
+        // Verify if exist an hotel with the same data
+        var exists = context.Hotels.Any(h =>
+            h.Name == hotel.Name &&
+            h.Street == hotel.Street &&
+            h.Number == hotel.Number &&
+            h.Zip_code == hotel.Zip_code
+        );
 
-        comm.Parameters.AddWithValue("@nome", hotel.Name);
-        comm.Parameters.AddWithValue("@rua", hotel.Street);
-        comm.Parameters.AddWithValue("@numero", hotel.Number);
-        comm.Parameters.AddWithValue("@cidade", hotel.City);
-        comm.Parameters.AddWithValue("@estado", hotel.State);
-        comm.Parameters.AddWithValue("@cep", hotel.Zipcode);
-        comm.Parameters.AddWithValue("@pais", hotel.Country);
-        comm.Parameters.AddWithValue("@telefone", hotel.Telephone);
-        comm.Parameters.AddWithValue("@quantidade_quartos", hotel.RoomCount);
-        comm.Parameters.AddWithValue("@ativo", hotel.Active);
+        if (exists) return null; // already exist
 
+        context.Hotels.Add(hotel);
+        context.SaveChanges();
 
-        Guid? hotelId = comm.ExecuteScalar() as Guid?; // Return database's generated ID or null if the hotel already exists (due to ON CONFLICT DO NOTHING)
-
-        if (hotelId.HasValue)
-        {
-            hotel.Id = hotelId.Value;
-                               
-            return hotel;
-        }
-        else
-        {
-            return null;
-        }
-
-        
+        return hotel;
     }
 
-    public IReadOnlyList<Hotel> LoadHotels(int loadQtd)
+    public IReadOnlyList<Hotel> GetHotels(int loadQtd)
     {
-        return new List<Hotel>().AsReadOnly(); // RETORNA LISTA VAZIA - EM ALTERACAO PARA USAR O BANCO
+        using var context = new HotelBookerContext(connectionString);
+
+        var hotels = context.Hotels.Take(loadQtd).ToList();
+
+        return hotels;
     }
 
-    
+
 }

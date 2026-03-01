@@ -1,7 +1,8 @@
 ﻿namespace DotNet_Console_Hotel.Infrastructure.Repositories;
 
-using Npgsql;
 using DotNet_Console_Hotel.Models;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 
@@ -13,20 +14,19 @@ internal class RepositoryReservation
     }
 
     private string connectionString;
-    public List<Reservation> Reservations = new(); // Change by database implementation
 
     public void AddReservation(Reservation reservation)
     {
-        Reservations.Add(reservation);
-        ShowAllReservation();
+        using var context = new HotelBookerContext(connectionString);
+
+        context.Reservations.Add(reservation);
+        context.SaveChanges();
     }
 
-    public void ShowAllReservation()
-    {
-        Console.WriteLine("*** Showing All the reservations ***");
-        foreach (var reservation in Reservations)
-        {
-            Console.WriteLine($"Reservation: UserId={reservation.ClientId}, RoomId={reservation.RoomId}, CheckInDate={reservation.CheckInDate:yyyy-MM-dd}, DataSaida={reservation.CheckOutDate:yyyy-MM-dd}");
-        }
-    }
+    public void RemoveReservation() { } // Delete a reservation
+    public void ShowMyReservations() { } // Get All user's reservations
+    public void UpdateReservation() { } // Update reservation's data, like checkin and checkout date
+                                        // Check-in and check-out dates can be changed only if they are more than one week from the current date.
+
+    // COMMIT QUE IMPLEMENTA OS 3 METODOS ACIMA
 }

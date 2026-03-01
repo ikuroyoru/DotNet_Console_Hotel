@@ -34,18 +34,10 @@ internal class MenuCreateReservation : Menu
         DateTime checkOut = SelectCheckOutDate();
         Console.WriteLine($"CheckOut Date: {checkOut} ");
 
-        /*
-        var reserva = _reservaService.CriarReserva(hotelEscolhido, dataEntrada, dataSaida);
+        var createReservation = _serviceReservation.CreateReservation(selectedHotel, checkIn, checkOut);
 
-        if (!reserva.sucesso)
-        {
-            Console.WriteLine("\nHouve um erro inesperado: " + reserva.mensagem);
-        }
-        else
-        {
-            Console.WriteLine($"\n{reserva.mensagem}");
-        }
-        */
+        if (!createReservation.Success) Console.WriteLine(createReservation.Error);
+
     }
     Hotel? SelectHotel()
     {
@@ -77,7 +69,7 @@ internal class MenuCreateReservation : Menu
 
             Console.Clear();
             Console.WriteLine($"Hotel '{selectedHotelInString}' doesnt exists");
-            Console.WriteLine("\nPress ESC to get back into the main menu \nPress any key to try again");
+            Console.WriteLine("\nPress ESC to get back into the main menu OR Press ANY KEY to try again");
             var key = Console.ReadKey();
 
             if (key.Key == ConsoleKey.Escape)
@@ -88,10 +80,10 @@ internal class MenuCreateReservation : Menu
     }
     DateTime SelectCheckInDate()
     {
-        return DateTime.Now;
+        return DateTime.UtcNow;
     }
     DateTime SelectCheckOutDate()
     {
-        return DateTime.Now.AddDays(7);
+        return DateTime.UtcNow.AddDays(7);
     }
 }

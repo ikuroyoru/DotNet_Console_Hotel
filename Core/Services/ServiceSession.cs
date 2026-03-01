@@ -4,21 +4,20 @@ namespace DotNet_Console_Hotel.Services;
 
 internal class ServiceSession
 {
-    public Guid? ClientId { get; private set; }
+    public Guid ClientId { get; private set; }
     public bool IsLoggedIn { get; private set; }
 
-    public Result SessionStart(Guid? clientId)
+    public Result SessionStart(Guid clientId)
     {
-        if (clientId == null || clientId == Guid.Empty)
+        if (clientId == Guid.Empty)
         {
             return Result.Fail("Error: Invalid Client ID");
         }
-        else
-        {
-            this.ClientId = clientId;
-            IsLoggedIn = true;
-            return Result.Ok();
-        }
+
+        this.ClientId = clientId;
+        IsLoggedIn = true;
+
+        return Result.Ok();
     }
 
     public void EndSession(Guid clientId)
@@ -28,7 +27,7 @@ internal class ServiceSession
         Console.WriteLine($"End Session for the user: {clientId}");
     }
 
-    public Guid? GetConnectedUserId()
+    public Guid GetConnectedUserId()
     {
         if (IsLoggedIn)
             return ClientId;

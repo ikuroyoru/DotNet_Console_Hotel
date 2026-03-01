@@ -12,19 +12,8 @@ internal class ServiceHotel
         _hotelRepository = hotelRepository;
     }
 
-    public void CreateHotel()
-    {
-        string pathFile = @"C:\Path\For\File.csv";
-
-        using (StreamReader reader = new StreamReader(pathFile))
-        {
-            string content = reader.ReadToEnd();  // read all content of the file into a string
-            Console.WriteLine(content);
-        }
-    }
-
     public IReadOnlyList<Hotel> GetHotels(int hotelLoadCount)
     {
-        return _hotelRepository.LoadHotels(hotelLoadCount);
+        return _hotelRepository.GetHotels(hotelLoadCount);
     }
 }

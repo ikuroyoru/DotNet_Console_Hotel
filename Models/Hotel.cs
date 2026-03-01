@@ -1,31 +1,40 @@
-﻿namespace DotNet_Console_Hotel.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DotNet_Console_Hotel.Models;
 
 internal class Hotel
 {
-    public Hotel(string name, string street, int number, string city, string state, string country, string zipcode, string telephone, int roomCount)
+    public Guid Id { get; set; }
+
+    public string Name { get; set; } = string.Empty;
+    public string Street { get; set; } = string.Empty;
+    public int Number { get; set; }
+    public string City { get; set; } = string.Empty;
+    public string State { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    public string Zip_code { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
+    public int Room_Count { get; set; }
+    public bool Is_active { get; set; } = true;
+
+    // Construtor
+    public Hotel(Guid id, string name, string street, int number,
+                 string city, string state, string country,
+                 string zip_code, string phone, int room_Count)
     {
-        this.Name = name;
-        this.Street = street;
-        this.Number = number;
-        this.City = city;
-        this.State = state;
-        this.Zipcode = zipcode;
-        this.Country = country;
-        this.Telephone = telephone;
-        this.RoomCount = roomCount;
+        Id = id;
+        Name = name;
+        Street = street;
+        Number = number;
+        City = city;
+        State = state;
+        Country = country;
+        Zip_code = zip_code;
+        Phone = phone;
+        Room_Count = room_Count;
+        Is_active = true;
     }
 
-    public Guid Id { get; set; }
-    public string Name { get; private set; }
-    public string Street { get; private set; }
-    public int Number { get; private set; }
-    public string City { get; }
-    public string State { get; }
-    public string Zipcode { get; private set; }
-    public string Country { get; }
-    public string Telephone { get; private set; }
-    public int RoomCount { get; private set; }
-    public bool Active { get; private set; }
 
     public List<Room> GenerateRooms(int singleCount, int doubleCount, int tripleCount, int suiteCount, decimal singlePrice, decimal doublePrice, decimal triplePrice, decimal suitePrice)
     {
